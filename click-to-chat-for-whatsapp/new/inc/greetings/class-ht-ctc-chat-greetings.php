@@ -44,6 +44,12 @@ class HT_CTC_Chat_Greetings {
             $ht_ctc_greetings['call_to_action'] = 'WhatsApp';
         }
 
+        $ht_ctc_greetings['header_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['header_content'], 'Click to Chat for WhatsApp', 'greetings_header_content' );
+        $ht_ctc_greetings['main_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['main_content'], 'Click to Chat for WhatsApp', 'greetings_main_content' );
+        $ht_ctc_greetings['bottom_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['bottom_content'], 'Click to Chat for WhatsApp', 'greetings_bottom_content' );
+        $ht_ctc_greetings['call_to_action'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['call_to_action'], 'Click to Chat for WhatsApp', 'greetings_call_to_action' );
+        $ht_ctc_greetings['opt_in'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['opt_in'], 'Click to Chat for WhatsApp', 'greetings_opt_in' );
+
         $ht_ctc_greetings = apply_filters( 'ht_ctc_fh_greetings_start', $ht_ctc_greetings );
 
         $page_id = get_the_ID();
@@ -104,13 +110,6 @@ class HT_CTC_Chat_Greetings {
             $page_id = wc_get_page_id( 'shop' );
             $post_title = esc_html( get_the_title( $page_id ) );
         }
-
-        $ht_ctc_greetings['header_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['header_content'], 'Click to Chat for WhatsApp', 'greetings_header_content' );
-        $ht_ctc_greetings['main_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['main_content'], 'Click to Chat for WhatsApp', 'greetings_main_content' );
-        $ht_ctc_greetings['bottom_content'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['bottom_content'], 'Click to Chat for WhatsApp', 'greetings_bottom_content' );
-        $ht_ctc_greetings['call_to_action'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['call_to_action'], 'Click to Chat for WhatsApp', 'greetings_call_to_action' );
-        $ht_ctc_greetings['opt_in'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_greetings['opt_in'], 'Click to Chat for WhatsApp', 'greetings_opt_in' );
-        
 
         $allowed_html = wp_kses_allowed_html( 'post' );
 
@@ -229,8 +228,7 @@ class HT_CTC_Chat_Greetings {
                 <?php
             }
             ?>
-            
-            <div style="position: relative; bottom: 18px; cursor: auto;" class="ht_ctc_greetings <?= $ctc_m_full_width ?>">
+            <div style="position: relative; bottom: 18px; cursor: auto; z-index:9;" class="ht_ctc_greetings <?= $ctc_m_full_width ?>">
 
                 <div class="ht_ctc_chat_greetings_box <?= $g_box_classes ?>" style="display: none; position: absolute; bottom: 0px; <?= $g_position_r_l ?>: 0px; min-width: <?= $min_width ?>; max-width: 420px; ">
 
