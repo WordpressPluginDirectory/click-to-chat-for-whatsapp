@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 (function ($) {
-
+    
+    console.log('ht_ctc_admin.js loaded');
     // ready
     $(function () {
 
@@ -386,6 +387,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         }
+
+        // url structure - custom url..
+        function url_structure() {
+            console.log('url_structure()');
+
+            function handleUrlStructureToggle(selector, wrapSelector) {
+                const $select = $(selector);
+                const $wrap = $(wrapSelector);
+
+                function toggleWrap() {
+                    const selectedVal = $select.find(':selected').val();
+                    if (selectedVal === 'custom_url') {
+                        $wrap.show(500);
+                    } else {
+                        $wrap.hide(500);
+                    }
+                }
+
+                // Initial check
+                toggleWrap();
+
+                // On change
+                $select.on('change', toggleWrap);
+            }
+
+            handleUrlStructureToggle('.url_structure_d', '.custom_url_desktop');
+            handleUrlStructureToggle('.url_structure_m', '.custom_url_mobile');
+        }
+        url_structure();
 
 
         // call to actions
@@ -817,9 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // // all intl inputs
                 // console.log('all_intl_instances');
                 // console.log(all_intl_instances);
-                
-                
-                
+
             }
 
         }
@@ -878,6 +906,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     countryOrder: pre_countries,
                     separateDialCode: true,
                     containerClass: 'intl_tel_input_container',
+                    // countrySearch: false,
 
                     utilsScript: ht_ctc_admin_var.utils
                 };
@@ -965,6 +994,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         }
+
 
         function add_prefer_countrys(country_code) {
 
@@ -1063,9 +1093,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 $('.g_an_param_order').val(g_an_param_order);
             });
 
-            
-
-
 
             // fb pixel
 
@@ -1138,8 +1165,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
 
-
-
             // Remove params
             $('.ctc_an_params').on('click', '.an_param_remove', function (e) {
                 console.log('on click: an_param_remove');
@@ -1165,13 +1190,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
-
-
-
-
-
+        
 
 
     });
