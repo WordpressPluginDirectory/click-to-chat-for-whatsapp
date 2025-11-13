@@ -180,6 +180,12 @@ if ( ! class_exists( 'HT_CTC_Hooks' ) ) {
 			$ht_ctc_os['is_fb_pixel'] = ( isset( $othersettings['fb_pixel'] ) ) ? 'yes' : 'no';
 			$ht_ctc_os['ga_ads']      = ( isset( $othersettings['ga_ads'] ) ) ? 'yes' : 'no';
 
+			if ( ! isset( $ht_ctc_os['data-attributes'] ) ) {
+				$ht_ctc_os['data-attributes'] = '';
+			} else {
+				$ht_ctc_os['data-attributes'] = (string) $ht_ctc_os['data-attributes'];
+			}
+
 			$ht_ctc_os['show_effect'] = ( isset( $othersettings['show_effect'] ) ) ? esc_attr( $othersettings['show_effect'] ) : '';
 
 			// show effect ? if 'From Corner' - then return time (for other effects - this->css_styles() handles)
