@@ -433,7 +433,6 @@ if ( ! class_exists( 'HT_CTC_Admin_Main_Page' ) ) {
 				<p class="description" style="font-size: 11px;">
 					<span style="font-weight: 500;">Wa.me</span>: To open WhatsApp Desktop app <br>
 					<span style="font-weight: 500;">Web WhatsApp</span>: Opens web.whatsapp.com<br>
-					<!-- todo: admin demo - custom url. -->
 					<span style="font-weight: 500;">Custom URL</span>: Add any URL (e.g., WhatsApp channel URL).
 				</p>
 				<div class="custom_url_desktop ctc_init_display_none" style="margin-top:10px;">

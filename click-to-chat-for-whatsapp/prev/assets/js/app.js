@@ -25,7 +25,7 @@ function ht_ccw_clickevent () {
 	}
 }
 function ht_ccw_clicked () {
-	if ( 'true' == google_analytics ) {
+	if ( 'true' === google_analytics ) {
 		google_analytics_event();
 	}
 }

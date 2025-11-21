@@ -1,24 +1,27 @@
+/* global gtag, ga, __gaTracker, dataLayer, gtag_report_conversion, fbq */
 // Click to Chat - Share
 
 /**
  * will create variable.. ht_ctc_share_var like.. ht_ctc_share_var ..
  */
-( function ( $ ) {
+( function htCtcShareModule ( $ ) {
 	// ready
-	$( function () {
+	$( function handleShareReady () {
 		var url = window.location.href;
 
-		var is_mobile = 'no';
+		var isMobile = 'no';
 		var is_iphone = 'no';
 		try {
 			// Where user can install app.
-			// instead: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+			// instead: /Android|webOS|...|Opera Mini/i.test(navigator.userAgent)
+			const mobileUserAgentPattern =
+					/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
 			if (
 				typeof navigator.userAgent !== 'undefined' &&
-				navigator.userAgent.match( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i )
+					navigator.userAgent.match( mobileUserAgentPattern )
 			) {
-				is_mobile = 'yes';
-				console.log( 'User agent: is_mobile: ' + is_mobile );
+				isMobile = 'yes';
+				console.log( 'User agent: isMobile: ' + isMobile );
 
 				// if iphone
 				if ( navigator.userAgent.match( /iPhone/i ) ) {
@@ -33,13 +36,15 @@
 				// if (/iPhone/.test(navigator.userAgent) && /CriOS/.test(navigator.userAgent)) {
 				// }
 			}
-		} catch ( e ) {}
+		} catch ( e ) {
+			console.warn( 'navigator.userAgent unavailable while detecting share mode', e );
+		}
 
-		if ( 'no' == is_mobile ) {
-			// is_mobile yes/no,  desktop > 1025
-			var is_mobile =
+		if ( 'no' === isMobile ) {
+			// isMobile yes/no,  desktop > 1025
+			isMobile =
 				typeof screen.width !== 'undefined' && screen.width > 1025 ? 'no' : 'yes';
-			console.log( 'screen width: is_mobile: ' + is_mobile );
+			console.log( 'screen width: isMobile: ' + isMobile );
 		}
 
 		var post_title = typeof document.title !== 'undefined' ? document.title : '';
@@ -57,18 +62,18 @@
 			}
 		}
 
-		function share_ht_ctc () {
+		function shareHtCtc () {
 			var ht_ctc_share = document.querySelector( '.ht-ctc-share' );
 			if ( ht_ctc_share ) {
-				share_display( ht_ctc_share );
-				ht_ctc_share.addEventListener( 'click', function () {
-					ht_ctc_share_click( ht_ctc_share );
+				shareDisplay( ht_ctc_share );
+				ht_ctc_share.addEventListener( 'click', function handleShareButtonClick () {
+					htCtcShareClick( ht_ctc_share );
 				} );
 			}
 
 			// shortcode
 			$( document )
-				.on( 'click', '.ht-ctc-sc-share', function () {
+				.on( 'click', '.ht-ctc-sc-share', function handleShareShortcodeClick () {
 					data_link = this.getAttribute( 'data-ctc-link' );
 					data_link = encodeURI( data_link );
 					window.open( data_link, '_blank', 'noopener' );
@@ -77,32 +82,35 @@
 					share_analytics( this );
 				} );
 		}
-		share_ht_ctc();
+		shareHtCtc();
 
 		// Hide based on device
-		function share_display ( p ) {
-			if ( is_mobile == 'yes' ) {
+		function shareDisplay ( p ) {
+			const cssStyles = p.getAttribute( 'data-css' );
+			if ( isMobile === 'yes' ) {
 				var display_mobile = p.getAttribute( 'data-display_mobile' );
-				if ( 'show' == display_mobile ) {
+				if ( 'show' === display_mobile ) {
 					// remove desktop style
-					var rm = document.querySelector( '.ht_ctc_desktop_share' );
-					rm ? rm.remove() : '';
+					var removeDesktopShare = document.querySelector( '.ht_ctc_desktop_share' );
+					if ( removeDesktopShare ) {
+						removeDesktopShare.remove();
+					}
 
-					var css = p.getAttribute( 'data-css' );
 					var position_mobile = p.getAttribute( 'data-position_mobile' );
-					p.style.cssText = position_mobile + css;
+					p.style.cssText = position_mobile + cssStyles;
 					display( p );
 				}
 			} else {
 				var display_desktop = p.getAttribute( 'data-display_desktop' );
-				if ( 'show' == display_desktop ) {
+				if ( 'show' === display_desktop ) {
 					// remove mobile style
-					var rm = document.querySelector( '.ht_ctc_mobile_share' );
-					rm ? rm.remove() : '';
+					var removeMobileShare = document.querySelector( '.ht_ctc_mobile_share' );
+					if ( removeMobileShare ) {
+						removeMobileShare.remove();
+					}
 
-					var css = p.getAttribute( 'data-css' );
 					var position = p.getAttribute( 'data-position' );
-					p.style.cssText = position + css;
+					p.style.cssText = position + cssStyles;
 					display( p );
 				}
 			}
@@ -115,6 +123,7 @@
 				$( p )
 					.show( dt );
 			} catch ( e ) {
+				console.warn( 'Share display fallback triggered', e );
 				p.style.display = 'block';
 			}
 
@@ -130,18 +139,18 @@
 				1200 :
 				120;
 
-			setTimeout( function () {
+			setTimeout( function runShareAnimation () {
 				p.classList.add( 'ht_ctc_animation', animateclass );
 			}, an_time );
 
 			// hover effects
 			$( '.ht-ctc-share' )
 				.hover(
-					function () {
+					function showShareHoverCta () {
 						$( '.ht-ctc-share .ht-ctc-cta-hover' )
 							.show( 220 );
 					},
-					function () {
+					function hideShareHoverCta () {
 						$( '.ht-ctc-share .ht-ctc-cta-hover' )
 							.hide( 100 );
 					},
@@ -149,7 +158,7 @@
 		}
 
 		// floating style - click
-		function ht_ctc_share_click ( values ) {
+		function htCtcShareClick ( values ) {
 			// link
 			share_link( values );
 
@@ -169,7 +178,7 @@
 			var ga_label = post_title + ', ' + url;
 
 			// if ga_enabled
-			if ( 'yes' == values.getAttribute( 'data-is_ga_enable' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-is_ga_enable' ) ) {
 				console.log( 'google analytics' );
 				if ( typeof gtag !== 'undefined' ) {
 					console.log( 'gtag' );
@@ -201,7 +210,7 @@
 			}
 
 			// google ads - call conversation code
-			if ( 'yes' == values.getAttribute( 'data-ga_ads' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-ga_ads' ) ) {
 				console.log( 'google ads enabled' );
 				if ( typeof gtag_report_conversion !== 'undefined' ) {
 					console.log( 'calling gtag_report_conversion' );
@@ -210,7 +219,7 @@
 			}
 
 			// FB Pixel
-			if ( 'yes' == values.getAttribute( 'data-is_fb_pixel' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-is_fb_pixel' ) ) {
 				console.log( 'fb pixel' );
 				if ( typeof fbq !== 'undefined' ) {
 					fbq( 'trackCustom', 'Click to Chat by HoliThemes', {
@@ -231,15 +240,15 @@
 
 			// web/api.whatsapp or api.whatsapp
 			var share_nav = 'api';
-			if ( 'webapi' == webandapi ) {
-				share_nav = is_mobile == 'yes' ? 'api' : 'web';
+			if ( 'webapi' === webandapi ) {
+				share_nav = isMobile === 'yes' ? 'api' : 'web';
 			}
 			var base_link = 'https://' + share_nav + '.whatsapp.com/send';
 
 			var target = '_blank';
 
 			// if its an iphone, then target is _self
-			if ( is_iphone == 'yes' ) {
+			if ( is_iphone === 'yes' ) {
 				target = '_self';
 			}
 

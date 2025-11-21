@@ -1,7 +1,8 @@
+/* global gtag, ga, __gaTracker, dataLayer, gtag_report_conversion, fbq */
 // Click to Chat - Group
-( function ( $ ) {
+( function htCtcGroupModule ( $ ) {
 	// ready
-	$( function () {
+	$( function handleGroupReady () {
 		var url = window.location.href;
 		var is_mobile = typeof screen.width !== 'undefined' && screen.width > 1024 ? 'no' : 'yes';
 		var post_title = typeof document.title !== 'undefined' ? document.title : '';
@@ -12,7 +13,7 @@
 				group_display( ht_ctc_group );
 
 				// click
-				ht_ctc_group.addEventListener( 'click', function () {
+				ht_ctc_group.addEventListener( 'click', function handleGroupButtonClick () {
 					// link
 					var base_link = 'https://chat.whatsapp.com/';
 					var group_id = ht_ctc_group.getAttribute( 'data-group_id' );
@@ -25,7 +26,7 @@
 
 			// shortcode - click
 			$( document )
-				.on( 'click', '.ht-ctc-sc-group', function () {
+				.on( 'click', '.ht-ctc-sc-group', function handleGroupShortcodeClick () {
 					data_link = this.getAttribute( 'data-ctc-link' );
 					data_link = encodeURI( data_link );
 					window.open( data_link, '_blank', 'noopener' );
@@ -37,28 +38,31 @@
 
 		// Hide based on device
 		function group_display ( p ) {
-			if ( is_mobile == 'yes' ) {
+			const cssStyles = p.getAttribute( 'data-css' );
+			if ( is_mobile === 'yes' ) {
 				var display_mobile = p.getAttribute( 'data-display_mobile' );
-				if ( 'show' == display_mobile ) {
+				if ( 'show' === display_mobile ) {
 					// remove desktop style
-					var rm = document.querySelector( '.ht_ctc_desktop_group' );
-					rm ? rm.remove() : '';
+					var removeDesktopGroup = document.querySelector( '.ht_ctc_desktop_group' );
+					if ( removeDesktopGroup ) {
+						removeDesktopGroup.remove();
+					}
 
-					var css = p.getAttribute( 'data-css' );
 					var position_mobile = p.getAttribute( 'data-position_mobile' );
-					p.style.cssText = position_mobile + css;
+					p.style.cssText = position_mobile + cssStyles;
 					display( p );
 				}
 			} else {
 				var display_desktop = p.getAttribute( 'data-display_desktop' );
-				if ( 'show' == display_desktop ) {
+				if ( 'show' === display_desktop ) {
 					// remove mobile style
-					var rm = document.querySelector( '.ht_ctc_mobile_group' );
-					rm ? rm.remove() : '';
+					var removeMobileGroup = document.querySelector( '.ht_ctc_mobile_group' );
+					if ( removeMobileGroup ) {
+						removeMobileGroup.remove();
+					}
 
-					var css = p.getAttribute( 'data-css' );
 					var position = p.getAttribute( 'data-position' );
-					p.style.cssText = position + css;
+					p.style.cssText = position + cssStyles;
 					display( p );
 				}
 			}
@@ -76,6 +80,7 @@
 				$( p )
 					.show( dt );
 			} catch ( e ) {
+				console.warn( 'Group display fallback triggered', e );
 				p.style.display = 'block';
 			}
 
@@ -86,18 +91,18 @@
 				1200 :
 				120;
 
-			setTimeout( function () {
+			setTimeout( function runGroupAnimation () {
 				p.classList.add( 'ht_ctc_animation', animateclass );
 			}, an_time );
 
 			// cta hover effects
 			$( '.ht-ctc-group' )
 				.hover(
-					function () {
+					function showGroupHoverCta () {
 						$( '.ht-ctc-group .ht-ctc-cta-hover' )
 							.show( 220 );
 					},
-					function () {
+					function hideGroupHoverCta () {
 						$( '.ht-ctc-group .ht-ctc-cta-hover' )
 							.hide( 100 );
 					},
@@ -116,7 +121,7 @@
 			var ga_label = post_title + ', ' + url;
 
 			// if ga_enabled
-			if ( 'yes' == values.getAttribute( 'data-is_ga_enable' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-is_ga_enable' ) ) {
 				console.log( 'google analytics' );
 				if ( typeof gtag !== 'undefined' ) {
 					console.log( 'gtag' );
@@ -148,7 +153,7 @@
 			}
 
 			// google ads - call conversation code
-			if ( 'yes' == values.getAttribute( 'data-ga_ads' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-ga_ads' ) ) {
 				console.log( 'google ads enabled' );
 				if ( typeof gtag_report_conversion !== 'undefined' ) {
 					console.log( 'calling gtag_report_conversion' );
@@ -157,7 +162,7 @@
 			}
 
 			// FB Pixel
-			if ( 'yes' == values.getAttribute( 'data-is_fb_pixel' ) ) {
+			if ( 'yes' === values.getAttribute( 'data-is_fb_pixel' ) ) {
 				console.log( 'fb pixel' );
 				if ( typeof fbq !== 'undefined' ) {
 					fbq( 'trackCustom', 'Click to Chat by HoliThemes', {

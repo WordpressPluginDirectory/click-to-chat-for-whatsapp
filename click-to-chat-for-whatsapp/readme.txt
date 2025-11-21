@@ -3,7 +3,7 @@ Requires at least: 4.7
 Tested up to: 6.8.2
 Requires PHP: 5.6
 Contributors: HoliThemes
-Stable tag: 4.31
+Stable tag: 4.33
 Tags: whatsapp, whatsapp business, click to chat, whatsapp chat, WooCommerce WhatsApp
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -540,6 +540,13 @@ Thank you so much in advance from "Click to Chat" Team
 * Or enable Auto-updates to update automatically
 
 == Changelog ==
+
+= 4.33 =
+* Fix: Animations issues for call to action, Greetings dialog.
+
+= 4.32 =
+* Enchancement: Display chat button like WooCommerce add to cart button.
+* Fix: Greetings dialog header image not adding properly.
 
 = 4.31 =
 * Fix: Shortcode style-1 added icon

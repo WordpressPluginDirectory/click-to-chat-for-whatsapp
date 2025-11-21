@@ -873,7 +873,6 @@ if ( ! class_exists( 'HT_CTC_Admin_Other_Settings' ) ) {
 			$an_delay    = ( isset( $options['an_delay'] ) ) ? esc_attr( $options['an_delay'] ) : '';
 			$an_itr      = ( isset( $options['an_itr'] ) ) ? esc_attr( $options['an_itr'] ) : '';
 
-			// todo:l update db.. and here.. instead of from center/from corner add center/corner to make things easy..
 			$entry_effect_list = array(
 				'no-show-effects' => '--No-Entry-Effects--',
 				'From Center'     => 'Center (zoomIn)',
@@ -1340,7 +1339,6 @@ if ( ! class_exists( 'HT_CTC_Admin_Other_Settings' ) ) {
 			</div>
 		</details>
 
-		<!-- todo: have to add or not.. ? -->
 		<details class="ctc_details">
 			<summary style="cursor:pointer;">JavaScript</summary>
 			<div class="m_side_15 m_top_5">

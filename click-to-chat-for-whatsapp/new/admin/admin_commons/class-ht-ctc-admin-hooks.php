@@ -403,8 +403,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Hooks' ) ) {
 			);
 
 			// Add data.
-			// TODO: Ensure strict check for in_array.
-			if ( '' !== $db_key && in_array( $db_key, $db_key_values ) ) {
+			if ( '' !== $db_key && in_array( $db_key, $db_key_values, true ) ) {
 
 				$update_values[ $db_key ] = $time;
 

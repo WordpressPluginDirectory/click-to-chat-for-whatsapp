@@ -96,6 +96,7 @@ if ( ! class_exists( 'HT_CTC_Scripts' ) ) {
 			wp_enqueue_style( 'ht_ctc_main_css', plugins_url( "new/inc/assets/css/$css", HT_CTC_PLUGIN_FILE ), '', HT_CTC_VERSION );
 
 			// app.js for all (chat)
+			// todo: add 'jquery' 
 			wp_enqueue_script( 'ht_ctc_app_js', plugins_url( "new/inc/assets/js/$js", HT_CTC_PLUGIN_FILE ), array( 'jquery' ), HT_CTC_VERSION, $load_app_js_bottom );
 
 			// woocommerce
@@ -105,6 +106,7 @@ if ( ! class_exists( 'HT_CTC_Scripts' ) ) {
 				$woo_options = get_option( 'ht_ctc_woo_options' );
 
 				if ( isset( $woo_options['woo_single_layout_cart_btn'] ) || isset( $woo_options['woo_shop_layout_cart_btn'] ) ) {
+					// todo: add 'jquery' 
 					wp_enqueue_script( 'ht_ctc_woo_js', plugins_url( "new/inc/assets/js/$woo_js", HT_CTC_PLUGIN_FILE ), array( 'jquery' ), HT_CTC_VERSION, $load_app_js_bottom );
 				}
 			}

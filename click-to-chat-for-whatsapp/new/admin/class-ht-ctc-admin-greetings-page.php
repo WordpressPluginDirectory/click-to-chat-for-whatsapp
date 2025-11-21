@@ -647,7 +647,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Greetings_Page' ) ) {
 						} else {
 							$new_input[ $key ] = map_deep( $input[ $key ], 'sanitize_text_field' );
 						}
-					} elseif ( in_array( $key, $editor ) ) {
+					} elseif ( in_array( $key, $editor, true ) ) {
 							// editor
 						if ( ! empty( $input[ $key ] ) && '' !== $input[ $key ] && function_exists( 'ht_ctc_wp_sanitize_text_editor' ) ) {
 							$new_input[ $key ] = ht_ctc_wp_sanitize_text_editor( $input[ $key ] );
@@ -655,7 +655,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Greetings_Page' ) ) {
 							// save field even if the value is empty..
 							$new_input[ $key ] = sanitize_text_field( $input[ $key ] );
 						}
-					} elseif ( in_array( $key, $textarea ) ) {
+					} elseif ( in_array( $key, $textarea, true ) ) {
 						// textarea
 						if ( function_exists( 'ht_ctc_wp_encode_emoji' ) ) {
 							$input[ $key ] = ht_ctc_wp_encode_emoji( $input[ $key ] );
@@ -685,7 +685,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Greetings_Page' ) ) {
 			do_action( 'ht_ctc_ah_admin_localization_greetings_page', $new_input );
 
 			foreach ( $new_input as $key => $value ) {
-				if ( in_array( $key, $local ) ) {
+				if ( in_array( $key, $local, true ) ) {
 					do_action( 'wpml_register_single_string', 'Click to Chat for WhatsApp', "greetings_$key", $new_input[ $key ] );
 				}
 			}

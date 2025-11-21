@@ -147,11 +147,9 @@ if ( ! class_exists( 'HT_CTC_Chat_Shortcode' ) ) {
 
 			if ( 'yes' === $is_mobile ) {
 				if ( 'yes' === $hide_mobile ) {
-					// TODO: Validate shortcode hide behaviour.
 					return '';
 				}
 			} elseif ( 'yes' === $hide_desktop ) {
-					// TODO: Validate shortcode hide behaviour.
 					return '';
 			}
 

@@ -583,7 +583,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Woo_Page' ) ) {
 						} else {
 							$new_input[ $key ] = sanitize_text_field( $input[ $key ] );
 						}
-					} elseif ( in_array( $key, $editor ) ) {
+					} elseif ( in_array( $key, $editor, true ) ) {
 						// editor
 						if ( ! empty( $input[ $key ] ) && '' !== $input[ $key ] && function_exists( 'ht_ctc_wp_sanitize_text_editor' ) ) {
 							$new_input[ $key ] = ht_ctc_wp_sanitize_text_editor( $input[ $key ] );
