@@ -395,8 +395,7 @@ if ( ! class_exists( 'HT_CTC_Chat' ) ) {
 			}
 
 			// webhook
-			$hook_url = isset( $othersettings['hook_url'] ) ? esc_attr( $othersettings['hook_url'] ) : '';
-			// todo: changed from string to json.. will test
+			$hook_url       = isset( $othersettings['hook_url'] ) ? esc_attr( $othersettings['hook_url'] ) : '';
 			$webhook_format = isset( $othersettings['webhook_format'] ) ? esc_attr( $othersettings['webhook_format'] ) : 'json';
 
 			/**

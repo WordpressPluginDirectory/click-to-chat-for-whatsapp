@@ -240,8 +240,8 @@ if ( ! class_exists( 'HT_CTC_Hooks' ) ) {
 
 			// Aria-hidden = true
 			if ( isset( $othersettings['aria'] ) ) {
-				$ht_ctc_os['data-attributes'] .= " aria-hidden='true' ";
-				$ht_ctc_os['attributes']       = " aria-hidden='true'";
+				$ht_ctc_os['data-attributes'] .= ' aria-hidden=true ';
+				$ht_ctc_os['attributes']       = ' aria-hidden=true';
 			}
 
 			return $ht_ctc_os;

@@ -3,15 +3,16 @@
 document.addEventListener( 'DOMContentLoaded', function initializeMaterializeComponents () {
 	// md
 	try {
-		// todo: fix if M is undefined
-		const selectElements = document.querySelectorAll( 'select' );
-		M.FormSelect.init( selectElements, {} );
-		const collapsibleElements = document.querySelectorAll( '.collapsible' );
-		M.Collapsible.init( collapsibleElements, {} );
-		const modalElements = document.querySelectorAll( '.modal' );
-		M.Modal.init( modalElements, {} );
-		const tooltippedElements = document.querySelectorAll( '.tooltipped' );
-		M.Tooltip.init( tooltippedElements, {} );
+		if ( typeof M !== 'undefined' ) {
+			const selectElements = document.querySelectorAll( 'select' );
+			M.FormSelect.init( selectElements, {} );
+			const collapsibleElements = document.querySelectorAll( '.collapsible' );
+			M.Collapsible.init( collapsibleElements, {} );
+			const modalElements = document.querySelectorAll( '.modal' );
+			M.Modal.init( modalElements, {} );
+			const tooltippedElements = document.querySelectorAll( '.tooltipped' );
+			M.Tooltip.init( tooltippedElements, {} );
+		}
 	} catch ( error ) {
 		console.log( error );
 	}
@@ -759,7 +760,7 @@ document.addEventListener( 'DOMContentLoaded', function initializeMaterializeCom
 					.find( ':selected' )
 					.val();
 
-				// todo: test
+				// cart layout button is visible, when style is 1 or 8
 				if ( shopStyleValue === '1' || shopStyleValue === '8' ) {
 					shopShowCartLayout();
 				}
@@ -1045,7 +1046,6 @@ document.addEventListener( 'DOMContentLoaded', function initializeMaterializeCom
 				// fall back..
 				country_code = 'us';
 
-				// todo: test if this way of changed the code works fine...
 				$.ajax( {
 					url: 'https://ipinfo.io',
 					dataType: 'jsonp',

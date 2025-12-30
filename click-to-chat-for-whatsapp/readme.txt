@@ -3,7 +3,7 @@ Requires at least: 4.7
 Tested up to: 6.9
 Requires PHP: 5.6
 Contributors: HoliThemes
-Stable tag: 4.34
+Stable tag: 4.35
 Tags: whatsapp, whatsapp business, click to chat, whatsapp chat, WooCommerce WhatsApp
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -541,24 +541,28 @@ Thank you so much in advance from "Click to Chat" Team
 
 == Changelog ==
 
+= 4.35 =
+* Enhancement: Custom CSS feature.
+* Enhancement: Aria hidden attribute settings.
+
 = 4.34 =
-* Enchancement: Settings to send dataLayer object to Google Tag Manager.
-* Enchancement: Add Chat widget at shop page now works with page level call to action, pre-filled message.
-* Enchancement: Notification badge feature.
-* fix: Shortcodes not working with WooCommerce specific variables.
+* Enhancement: Added settings to send dataLayer objects to Google Tag Manager.
+* Enhancement: Chat widget now works on WooCommerce shop pages with page-level call to action and pre-filled messages.
+* Enhancement: Added Notification badge feature.
+* Fix: Shortcodes were not working with WooCommerce-specific variables.
 
 = 4.33 =
 * Fix: Animations issues for call to action, Greetings dialog.
 
 = 4.32 =
-* Enchancement: Display chat button like WooCommerce add to cart button.
+* Enhancement: Display chat button like WooCommerce add to cart button.
 * Fix: Greetings dialog header image not adding properly.
 
 = 4.31 =
 * Fix: Shortcode style-1 added icon
 
 = 4.30 =
-* Enchancement: Google Analytics feature.
+* Enhancement: Google Analytics feature.
 
 = 4.29 =
 * Settings to load JavaScript files as Normal, Async, or Defer for improved performance.

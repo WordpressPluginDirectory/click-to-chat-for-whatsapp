@@ -222,7 +222,7 @@
 					.val() );
 
 				// If no header image is set, hide related elements
-				// todo: === test. can be any type..
+				// g_header_image type is string
 				if ( $( '.g_header_image' )
 					.val() === '' ) {
 					$( '.row_g_header_online_status' )

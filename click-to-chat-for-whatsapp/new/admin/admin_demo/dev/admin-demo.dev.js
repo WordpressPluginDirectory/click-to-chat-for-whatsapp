@@ -10,7 +10,8 @@
 ( function htCtcAdminDemoModule ( $ ) {
 	// ready
 	$( function handleAdminDemoReady () {
-		// // todo: iframe..
+
+		// // iframe..
 		// const inIframe = (() => {
 		//     try { return window.self !== window.top; } catch { return true; }
 		// })();
@@ -1223,7 +1224,7 @@
 			/**
 			 * Gretings page
 			 *
-			 * todo: symobols not working properly on live demo. (works after page reloads)
+			 * check: symobols not working properly on live demo. (works after page reloads)
 			 */
 			if ( $( 'body' )
 				.hasClass( 'click-to-chat_page_click-to-chat-greetings' ) ) {

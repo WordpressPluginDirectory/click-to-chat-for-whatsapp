@@ -27,7 +27,6 @@ function ht_ccw_clickevent () {
 	}
 }
 function ht_ccw_clicked () {
-	// todo: have to test well.
 	if ( 'true' === google_analytics ) {
 		google_analytics_event();
 	}

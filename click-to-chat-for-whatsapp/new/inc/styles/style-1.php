@@ -90,7 +90,7 @@ class="ctc-analytics s1_btn ctc_s_1">
 </button>
 
 <?php
-// todo: instead of display message like this.. remove here and focus at customize styles settings.. and at select style..
+// instead of display message like this.. remove here and focus at customize styles settings.. and at select style..
 // admin - add for admin demo
 if ( is_admin() ) {
   // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check of the 'page' slug on admin screens; no state change or privilege escalation.

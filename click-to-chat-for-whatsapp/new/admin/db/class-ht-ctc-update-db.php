@@ -97,9 +97,6 @@ if ( ! class_exists( 'HT_CTC_Update_DB' ) ) {
 		 *
 		 * 4.34 changes. setting form GTM datalayer push. so by default enabled. (as like early app js how datalayer pused. now with settings.)
 		 * and in 4.30 we added google anayalytics data to send to gtm datalayer form app js but now as deprecated. so added ga_gtm as enabled.
-		 *
-		 *
-		 * todo: add details..
 		 */
 		public function v4_34_update() {
 

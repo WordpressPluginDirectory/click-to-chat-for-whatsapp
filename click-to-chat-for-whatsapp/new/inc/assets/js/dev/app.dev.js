@@ -8,8 +8,11 @@ console.log( 'app js jQuery:', htCtcJq );
 ( function htCtcAppModule ( window, document, ctcJq ) {
 	console.log( 'app.dev.js loaded' );
 
-	function ifNojQueryCompatibility () {
-		console.log( 'ifNojQueryCompatibility' );
+	// todo: for testing. remove this. line..
+	// ctcJq = false;
+
+	function nojQueryCompatibility () {
+		console.log( 'nojQueryCompatibility' );
 
 		/**
 		 * backword compatibility when no jQuery is used.
@@ -40,7 +43,7 @@ console.log( 'app js jQuery:', htCtcJq );
 
 	// if ctcJq is not function. then backward compatibility mode
 	if ( ! ctcJq ) {
-		ifNojQueryCompatibility();
+		nojQueryCompatibility();
 	}
 
 	// ready
@@ -100,9 +103,13 @@ console.log( 'app js jQuery:', htCtcJq );
 
 		const blockedKeys = [ '__proto__', 'prototype', 'constructor', '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__' ];
 
-		// const isSafeObjectKey = ( key ) =>
-		// 	typeof key === 'string' && key.length > 0 && !blockedKeys.includes(key);
-
+		/**
+		 * Validates if a key is safe to use for object property access.
+		 * Prevents prototype pollution and other common injection attacks.
+		 *
+		 * @param {string} key The key to validate
+		 * @return {boolean} True if the key is safe, false otherwise.
+		 */
 		const isSafeObjectKey = ( key ) => {
 			// Allow only alphanumeric, underscore, hyphen
 			if ( typeof key !== 'string' || key.length === 0 || ! /^[a-zA-Z0-9_-]+$/.test( key ) ) {
@@ -110,12 +117,43 @@ console.log( 'app js jQuery:', htCtcJq );
 			}
 
 			// Explicitly block prototype pollution keys
-			if ( blockedKeys.includes( key ) ) {
-				return false;
-			}
-
-			return true;
+			return ! blockedKeys.includes( key );
 		};
+
+		/**
+		 * Safely retrieves a property from an object using a dynamic key.
+		 * suppresses security/detect-object-injection
+		 *
+		 * @param {Object} obj The object to access
+		 * @param {string} key The key to access
+		 * @param {*} fallback fallback value if key or object is invalid
+		 * @return {*}
+		 */
+		function getSafeProperty ( obj, key, fallback = false ) {
+			if ( ! obj || typeof obj !== 'object' || ! isSafeObjectKey( key ) ) {
+				return fallback;
+			}
+			// eslint-disable-next-line security/detect-object-injection
+			return Object.prototype.hasOwnProperty.call( obj, key ) ? obj[ key ] : fallback;
+		}
+
+		/**
+		 * Safely sets a property on an object using a dynamic key.
+		 * suppresses security/detect-object-injection
+		 *
+		 * @param {Object} obj The object to modify
+		 * @param {string} key The key to set
+		 * @param {*} value The value to set
+		 * @return {boolean} true if successful, false otherwise
+		 */
+		function setSafeProperty ( obj, key, value ) {
+			if ( obj && typeof obj === 'object' && isSafeObjectKey( key ) ) {
+				// eslint-disable-next-line security/detect-object-injection
+				obj[ key ] = value;
+				return true;
+			}
+			return false;
+		}
 
 		// Retrieve and parse plugin-related data from localStorage and assign it to ht_ctc_storage.
 		function getStorageData () {
@@ -437,6 +475,8 @@ console.log( 'app js jQuery:', htCtcJq );
 				// --------------------------
 				utils: {
 					isSafeObjectKey,
+					getSafeProperty,
+					setSafeProperty,
 
 					// timeOnWp: time_on_wordpress,
 					// applyVariables: apply_variables,
@@ -705,9 +745,12 @@ console.log( 'app js jQuery:', htCtcJq );
 		// E.g. add event listener for ht_ctc_event_configure
 		// document.addEventListener('ht_ctc_event_configure', function (event) {
 		// 	var g1_form_webhook = 'https://example.com/webhook';
-		// 	ctc = event.detail.ctc;
-		// 	ctc_values = event.detail.ctc_values;
+		// 	var ctc = event.detail.ctc;
 		// 	ctc.g1_form_webhook = g1_form_webhook;
+		// });
+		// 	// Modify the configuration directly on the event object
+		// document.addEventListener('ht_ctc_event_configure', function (event) {
+		// 	event.detail.ctc.g1_form_webhook = 'https://example.com/webhook';
 		// });
 
 		// fixed position
@@ -1502,15 +1545,14 @@ console.log( 'app js jQuery:', htCtcJq );
 						) {
 							return;
 						}
-						var descriptor = Object.getOwnPropertyDescriptor( ctc_values, paramKey );
-						if (
-							! descriptor ||
-							! descriptor.value ||
-							'object' !== typeof descriptor.value
-						) {
+
+						// var descriptor = Object.getOwnPropertyDescriptor( ctc_values, paramKey );
+						// var parameterDefinition = descriptor.value;
+						const parameterDefinition = getSafeProperty( ctc_values, paramKey );
+						if ( ! parameterDefinition || typeof parameterDefinition !== 'object' ) {
 							return;
 						}
-						var parameterDefinition = descriptor.value;
+
 						var parameterKey = parameterDefinition.key;
 						var parameterValue = parameterDefinition.value;
 						if ( typeof parameterKey !== 'string' ) {
@@ -1720,8 +1762,8 @@ console.log( 'app js jQuery:', htCtcJq );
 						ctc_values.gtm_params.forEach( ( gtmParamKey ) => {
 							if ( typeof gtmParamKey !== 'string' || ! isSafeObjectKey( gtmParamKey ) ) { return; }
 
-							// eslint-disable-next-line security/detect-object-injection -- Safe: key validated by isSafeObjectKey()
-							const def = ctc_values[ gtmParamKey ];
+							// const def = ctc_values[ gtmParamKey ];
+							const def = getSafeProperty( ctc_values, gtmParamKey );
 							if ( ! def || typeof def !== 'object' ) { return; }
 
 							const key = apply_variables( def.key );
@@ -1729,8 +1771,8 @@ console.log( 'app js jQuery:', htCtcJq );
 
 							if ( ! isSafeObjectKey( key ) ) { return; }
 
-							// eslint-disable-next-line security/detect-object-injection -- Safe: key validated by isSafeObjectKey()
-							gtm_params_obj[ key ] = value;
+							// gtm_params_obj[ key ] = value;
+							setSafeProperty( gtm_params_obj, key, value );
 						} );
 					}
 
@@ -1798,18 +1840,20 @@ console.log( 'app js jQuery:', htCtcJq );
 							) {
 								return;
 							}
-							var descriptor = Object.getOwnPropertyDescriptor(
+
+							// var descriptor = Object.getOwnPropertyDescriptor( ctc_values, pixelParamKey, );
+							// var pixelParameterDefinition = descriptor.value;
+							const pixelParameterDefinition = getSafeProperty(
 								ctc_values,
 								pixelParamKey,
 							);
 							if (
-								! descriptor ||
-								! descriptor.value ||
-								'object' !== typeof descriptor.value
+								! pixelParameterDefinition ||
+								typeof pixelParameterDefinition !== 'object'
 							) {
 								return;
 							}
-							var pixelParameterDefinition = descriptor.value;
+
 							var pixelParameterKey = pixelParameterDefinition.key;
 							var pixelParameterValue = pixelParameterDefinition.value;
 							if ( typeof pixelParameterKey !== 'string' ) {
@@ -1980,69 +2024,6 @@ console.log( 'app js jQuery:', htCtcJq );
 			var specs = 'popup' === url_target ? pop_window_features : 'noopener';
 			console.log( '-- specs: ' + specs + ' --' );
 
-			// todo: if popup is blocked by browser then it will not work.
-			// so call createlink function to open link.
-
-			// if ( 'popup' === url_target ) {
-			//     var pop_window = window.open(base_url, url_target, specs);
-			//     try {
-			//         // with some extensions if popup is not opened,
-			//         // popup focus is true - i.e. not calling cache.
-			//         console.log('pop focus try..');
-			//         console.log(pop_window);
-
-			//         /**
-			//          * if issue it throws error and runs cache.
-			//          * with some browser blockers it works good
-			//          * as the popup is loaded and it calling cache,
-			//          * but with browser extension blockers - the popup is not loaded
-			//          * and its not throwing cache, the code continues working.
-			//          */
-			//         pop_window.focus();
-
-			//         // for some popup blockers - .focus, .blur, .closed may not work well
-			//         // as some blockers pop_window is referring to the same window only.
-			//         // if pop_window have ht_ctc_chat_var then it refer to same window.
-			//         // i.e. popup might be blocked. so call createlink
-			//         if (pop_window.ht_ctc_chat_var) {
-			//             // if true it is not the real popup whatsapp window.
-			//             // some browser blockers may block popup
-			//             console.log('ht_ctc_chat_var exists on pop_window variable');
-			//             createlink();
-			//         }
-
-			//         console.log('pop window focused..');
-			//     } catch (e) {
-			//         console.log('pop cache');
-			//         console.log(e);
-			//         createlink();
-			//     }
-			// } else {
-			//     // By adding setTimeout works better with some blocker extensions.
-
-			//     // desktop 1ms delay, mobile no settimeout
-			//     if ( is_mobile === 'yes' ) {
-			//         window.open(base_url, url_target, specs);
-			//     } else {
-			//         setTimeout(() => {
-			//             console.log('normal: window.open - with setimeout 1ms');
-			//             window.open(base_url, url_target, specs);
-			//         }, 1);
-			//     }
-
-			// }
-
-			// function createlink() {
-			//     console.log('createlink');
-			//     var link =
-			//         "<a class='ht_ctc_dynamic' style='display:none;' target='_blank' href=" +
-			//         base_url +
-			//         '></a>';
-			//     $('body').append(link);
-			//     $('.ht_ctc_dynamic')[0].click();
-			//     $('.ht_ctc_dynamic').remove();
-			// }
-
 			window.open( base_url, url_target, specs );
 
 			// Set the chat number based on the clicked element —
@@ -2121,10 +2102,12 @@ console.log( 'app js jQuery:', htCtcJq );
 			console.log( 'hook' );
 			console.log( 'g_hook_v: ' + g_hook_v );
 
-			if ( ! ctc.hook_url ) {
+			var h_url = ctc && ctc.hook_url;
+
+			if ( ! h_url ) {
 				console.log( 'No hook URL defined, skipping webhook.' );
 				return;
-			};
+			}
 
 			let hook_values = {};
 			const headers = {};
@@ -2150,7 +2133,9 @@ console.log( 'app js jQuery:', htCtcJq );
 				hook_values.forEach( ( val ) => {
 					console.log( i );
 					console.log( val );
-					pair_values[ 'value' + i ] = val;
+
+					// pair_values[ 'value' + i ] = val;
+					setSafeProperty( pair_values, 'value' + i, val );
 					i++;
 				} );
 
@@ -2165,7 +2150,6 @@ console.log( 'app js jQuery:', htCtcJq );
 				{ detail: { ctc, number } },
 			) );
 
-			const h_url = ctc.hook_url;
 			hook_values = ctc.hook_v;
 
 			console.log( h_url );
