@@ -34,13 +34,13 @@ $othersettings = get_option( 'ht_ctc_othersettings' );
 				<p style="margin: 0 0 16px; font-size: 13.5px; color: #64748b; line-height: 1.6; position: relative; z-index: 1;">Experience our most advanced, lightning-fast dashboard yet. Built for the future of Click to Chat.</p>
 				<div style="margin: 0 0 28px; display: flex; flex-direction: column; gap: 8px; align-items: center; position: relative; z-index: 1;">
 					<div style="font-size: 12px; font-weight: 500; color: #475569; display: flex; align-items: center; gap: 6px;">
-						<span style="color: #6366f1; font-weight: 800;">✓</span> <?php esc_html_e( 'Switch back easily', 'click-to-chat-for-whatsapp' ); ?>
+						<span style="color: #6366f1; font-weight: 800;">✓</span> Switch back easily
 					</div>
 					<div style="font-size: 12px; font-weight: 500; color: #475569; display: flex; align-items: center; gap: 6px;">
-						<span style="color: #6366f1; font-weight: 800;">✓</span> <?php esc_html_e( 'No settings will be lost', 'click-to-chat-for-whatsapp' ); ?>
+						<span style="color: #6366f1; font-weight: 800;">✓</span> No settings will be lost
 					</div>
 				</div>
-				<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=click-to-chat&admin_ui=2026' ), 'ht_ctc_switch_ui', '_htnonce' ) ); ?>" class="button" style="width: 100%; justify-content: center; height: 44px; line-height: 44px; font-size: 14px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1; letter-spacing: 0.01em; margin: 0;"><?php esc_html_e( 'Switch to 2026 UI', 'click-to-chat-for-whatsapp' ); ?></a>
+				<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=click-to-chat&admin_ui=2026' ), 'ht_ctc_switch_ui', '_htnonce' ) ); ?>" class="button" style="width: 100%; justify-content: center; height: 44px; line-height: 44px; font-size: 14px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1; letter-spacing: 0.01em; margin: 0;">Switch to 2026 UI</a>
 			</div>
 		<?php } else { ?>
 			<div style="background: #f5f3ff; padding: 30px 20px; border: 1px solid #ddd6fe; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); margin-bottom: 30px; text-align: center; position: relative; overflow: hidden;">
@@ -63,7 +63,7 @@ $othersettings = get_option( 'ht_ctc_othersettings' );
 				<a href="https://holithemes.com/shop/" target="_blank" class="button" style="width: 100%; justify-content: center; background: #6366f1; border: none; color: #fff; height: 42px; line-height: 42px; font-size: 14px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; position: relative; z-index: 1; transition: all 0.3s ease; margin: 0; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">Update PRO Plugin</a>
 				<div style="margin: 18px 0 0; padding: 12px 14px; background: rgba(255, 255, 255, 0.6); border: 1px dashed #c4b5fd; border-radius: 10px; text-align: left; position: relative; z-index: 1;">
 					<p style="margin: 0; font-size: 12px; color: #4338ca; opacity: 0.85; line-height: 1.6;">
-						License expired and not renewing for now? <a href="https://holithemes.com/shop/download-click-to-chat-pro-compatible-version/" target="_blank" style="color: #4338ca; font-weight: 600;">Download the compatible PRO version</a> to use the new dashboard. Please note it is not the latest version.
+						License expired and not renewing for now? <a href="https://holithemes.com/shop/download-click-to-chat-pro-compatible-version/" target="_blank" style="color: #4338ca; font-weight: 600;">Download the compatible PRO version</a> to use the new dashboard.
 					</p>
 				</div>
 				<p style="margin: 20px 0 0; font-size: 12px; color: #4338ca; opacity: 0.7; position: relative; z-index: 1;">

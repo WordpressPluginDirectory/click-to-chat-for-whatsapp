@@ -4,6 +4,7 @@
  *
  * @package Click_To_Chat
  * @subpackage Administration
+ * @since 4.41
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,34 +19,19 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 	class HT_CTC_Admin_Page_Scripts {
 
 		/**
+		 * Admin hook for the main SPA page — the top-level menu registered with
+		 * slug 'click-to-chat' in class-ht-ctc-admin-menu.php.
+		 *
+		 * @var string
+		 */
+		const SPA_HOOK = 'toplevel_page_click-to-chat';
+
+		/**
 		 * Constructor
 		 */
 		public function __construct() {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-			// add_filter( 'wp_resource_hints', array( $this, 'add_resource_hints' ), 10, 2 );
 		}
-
-
-		/**
-		 * Add Resource Hints
-		 * Establish early connections to external origins used dynamically by the React/JS modules.
-		 *
-		 * @param array  $hints URLs to print for resource hints.
-		 * @param string $relation_type The relation type the URLs are printed for, e.g. 'preconnect'.
-		 * @return array
-		 */
-		// public function add_resource_hints( $hints, $relation_type ) {
-		// if ( 'preconnect' === $relation_type ) {
-		// Only add if we are on a plugin page
-		// if ( function_exists( 'get_current_screen' ) ) {
-		// $screen = get_current_screen();
-		// if ( $screen && strpos( $screen->id, 'click-to-chat' ) !== false ) {
-		// $hints[] = 'https://ipinfo.io';
-		// }
-		// }
-		// }
-		// return $hints;
-		// }
 
 
 		/**
@@ -89,9 +75,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 		 * @return string[]
 		 */
 		private function allowed_hooks() {
-			// Hook for the top-level menu with slug 'click-to-chat' from
-			// ht_ctc_admin_menu.php add_menu_page().
-			$hooks = array( 'toplevel_page_click-to-chat' );
+			$hooks = array( self::SPA_HOOK );
 
 			return apply_filters( 'ht_ctc_fh_admin_allowed_hooks', $hooks );
 		}
@@ -136,9 +120,19 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 
 			$assets_dir = defined( 'HT_CTC_DEBUG_MODE' ) ? 'dev' : 'min';
 
+			// Cache-buster query string for dynamic import() URLs.
+			$ver = '?ver=' . HT_CTC_VERSION;
+
 			$theme = $this->get_admin_theme();
 
-			$intl_tel_input_utils = plugins_url( 'new/admin/admin_assets/intl/js/utils.js', HT_CTC_PLUGIN_FILE );
+			// intl-tel-input assets are resolved via HT_CTC_Phone_Field for consistency across admin UIs.
+			// Dynamic ES module loading is handled by PhoneInput.js.
+			if ( ! class_exists( 'HT_CTC_Phone_Field' ) ) {
+				HT_CTC_Utils::load_file( 'new/tools/phone-field/class-ht-ctc-phone-field.php' );
+			}
+
+			$phone_field_assets = HT_CTC_Phone_Field::assets();
+			$phone_field_js     = plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/PhoneInput.js", HT_CTC_PLUGIN_FILE ) . $ver;
 
 			// Get all allowed settings.
 			if ( ! class_exists( 'HT_CTC_Settings_Data' ) ) {
@@ -160,18 +154,46 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 			// ex: "wp-json/click-to-chat-for-whatsapp/v1/get-fields/".
 			$get_fields_endpoint = class_exists( 'HT_CTC_Rest_API' ) ? HT_CTC_Rest_API::route( 'get-fields/' ) : '';
 
+			$user_locale = get_user_locale();
+
+			// One resolution of the admin locale for the phone field; see
+			// HT_CTC_Phone_Field::locale() for why 'tag' and 'strings' differ.
+			$phone_locale = HT_CTC_Phone_Field::locale( $user_locale );
+
 			$ctc = array(
 				'version'         => HT_CTC_VERSION,
 				// Admin locale — part of the JS field-cache key (fields carry translated
-				// strings, so a language switch must invalidate the cached tabs).
-				'locale'          => get_user_locale(),
+				// strings, so a language switch must invalidate the cached tabs). The RAW
+				// WP locale on purpose: as a cache key it only has to vary, and
+				// de_DE_formal vs de_DE are different translations.
+				'locale'          => $user_locale,
 				'initialSettings' => $initial_settings,
 				'paths'           => array(
-					'plugin_url'        => defined( 'HT_CTC_PLUGIN_DIR_URL' ) ? HT_CTC_PLUGIN_DIR_URL : plugin_dir_url( HT_CTC_PLUGIN_FILE ),
-					'front_css'         => plugins_url( 'new/inc/assets/css/' . ( defined( 'HT_CTC_DEBUG_MODE' ) ? 'dev/main.dev.css' : 'main.css' ), HT_CTC_PLUGIN_FILE ),
-					'ajaxurl'           => admin_url( 'admin-ajax.php' ),
-					'intlTelInput'      => plugins_url( 'new/admin/admin_assets/intl/js/intlTelInput.min.js', HT_CTC_PLUGIN_FILE ),
-					'intlTelInputUtils' => $intl_tel_input_utils,
+					'plugin_url' => defined( 'HT_CTC_PLUGIN_DIR_URL' ) ? HT_CTC_PLUGIN_DIR_URL : plugin_dir_url( HT_CTC_PLUGIN_FILE ),
+					// $ver: the preview injects this as a raw <link> (PreviewManager
+					// injectFrontCss), so it never passes through wp_enqueue_style and
+					// nothing else would stamp a version on it.
+					'front_css'  => plugins_url( 'new/inc/assets/css/' . ( defined( 'HT_CTC_DEBUG_MODE' ) ? 'dev/main.dev.css' : 'main.css' ), HT_CTC_PLUGIN_FILE ) . $ver,
+					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+					'phoneInput' => array(
+						// 'js'                => $phone_field_js,
+						// $ver: assets() returns bare paths; these two are import()ed
+						// by PhoneInput.js, so nothing else stamps them. The files are
+						// this plugin's vendored copies, so HT_CTC_VERSION is right.
+						'intlTelInput'      => $phone_field_assets['js'] . $ver,
+						'intlTelInputUtils' => $phone_field_assets['utils'] . $ver,
+						// Vendored library version, so JS can can branch on it
+						// without parsing the URL.
+						'version'           => $phone_field_assets['version'],
+						// Admin's own language, for the country names — the browser
+						// translates those itself from this tag. Already resolved to
+						// valid BCP-47; JS must pass it straight through, never
+						// reshape it (that is what produced 'de-CH_informal').
+						'locale'            => $phone_locale['tag'],
+						// The library's own chrome for that same language, inlined —
+						// empty for English/unknown, where its own defaults stand.
+						'uiStrings'         => HT_CTC_Phone_Field::locale_strings( $user_locale ),
+					),
 				),
 				'api'             => array(
 					'settings' => array(
@@ -181,8 +203,15 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 				),
 				'wprest_nonce'    => wp_create_nonce( 'wp_rest' ),
 				'nonce'           => wp_create_nonce( 'ht_ctc_admin_nonce' ),
-				// localization. i18n
-				// todo(4.42): i18n and have to update the content and at js file
+
+				/*
+				 * i18n UI strings.
+				 *
+				 * todo(4.44): wrap these in __() and settle the wording. Held back
+				 * deliberately: admin2's copy is still moving, and a string wrapped
+				 * now is a translation asked for and then thrown away. Do it once
+				 * the strings stop changing, alongside the JS that consumes them.
+				 */
 				'i18n'            => array(
 					'save'          => 'Save',
 					'saved'         => 'Settings saved successfully.',
@@ -193,6 +222,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 				),
 				'theme'           => $theme,
 				'preview'         => array(
+					// Base directory path for preview templates (PreviewManager.js appends filename + ?ver= using config.version).
 					'templatesBasePath' => plugins_url( "new/admin2/assets/$assets_dir/js/modules/preview/templates/", HT_CTC_PLUGIN_FILE ),
 					// Used by greetings preview templates to substitute the {site} variable.
 					'site'              => get_bloginfo( 'name' ),
@@ -204,50 +234,37 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 
 				/*
 				 * Lazy modules: each entry is a JS file App.js dynamically import()s.
-				 * All paths use $assets_dir so dev loads source and prod loads min.
+				 * Triggers (tabs / selector / delay / on-demand) and the per-entry keys
+				 * are documented in
+				 * dev/docs/developer-reference/admin2-module-loading.md.
 				 *
-				 * HOW AN ENTRY LOADS — set ONE of these triggers (an entry with
-				 * neither `tabs` nor `delay` is inert: it just never loads, no error):
-				 *   • tabs  → loaded when one of these admin tabs is opened
-				 *             (App.loadTabSettings — load before render, then run
-				 *             `method` after render). Use for tab-specific UI.
-				 *   • delay → loaded once, `delay` ms after boot, regardless of tab
-				 *             (App.loadDelayedModules). Use for global, always-on
-				 *             features kept out of the initial bundle (e.g. preview).
-				 *   • on-demand → no trigger here; loaded explicitly by key from JS
-				 *             when needed (e.g. App.loadAndInitIntlInput reads
-				 *             modulesPath.intlInput directly). Use for rare/contextual loads.
-				 *
-				 * PER-ENTRY KEYS:
-				 *   path      — URL of the JS module to import() (required).
-				 *   tabs      — tab ids that trigger loading (see above).
-				 *   delay     — ms after boot to load (see above).
-				 *   method    — export name called after load: method(arg|context, context, app).
-				 *   arg       — optional first arg for `method`.
-				 *   managerId — register module.default as a named manager (app.managers[id])
-				 *               instead of/in addition to calling `method`; lets other
-				 *               code + PRO look it up (RepeaterManager, PreviewManager).
-				 *   rendererId— register module.default as a field renderer.
+				 * Every `path` must end with . $ver — dynamic import() URLs never pass
+				 * through wp_enqueue_script, so nothing else cache-busts them.
 				 */
 				'modulesPath'     => array(
-					'intlInput'       => array(
-						'path'   => plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/IntlInput.js", HT_CTC_PLUGIN_FILE ),
+					'phoneInput'      => array(
+						'path'   => $phone_field_js,
 						// 'tabs'   => array( 'general-settings', 'greetings-settings' ),
-						'method' => 'initIntlInput',
+						'method' => 'initPhoneInput',
 						'arg'    => 'intl_number',
 					),
 					'displaySettings' => array(
-						'path'   => plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/DisplaySettings.js", HT_CTC_PLUGIN_FILE ),
+						'path'   => plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/DisplaySettings.js", HT_CTC_PLUGIN_FILE ) . $ver,
 						'tabs'   => array( 'display-settings', 'group-settings', 'share-settings' ),
 						'method' => 'initDisplaySettings',
 					),
 					'repeater'        => array(
-						'path'      => plugins_url( "new/admin2/assets/$assets_dir/js/modules/managers/RepeaterManager.js", HT_CTC_PLUGIN_FILE ),
+						'path'      => plugins_url( "new/admin2/assets/$assets_dir/js/modules/managers/RepeaterManager.js", HT_CTC_PLUGIN_FILE ) . $ver,
+
+						// BOTH triggers on purpose — either one alone leaves a hole.
+						// Keep a tab listed here when its repeater markup arrives
+						// asynchronously, since `selector` is matched only once.
+						'selector'  => '.ctc_repeater_add_button, .ctc-remove-button',
 						'tabs'      => array( 'general-settings', 'greetings-settings', 'display-settings', 'analytics-settings' ),
 						'managerId' => 'repeater',
 					),
 					'actions'         => array(
-						'path'   => plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/Actions.js", HT_CTC_PLUGIN_FILE ),
+						'path'   => plugins_url( "new/admin2/assets/$assets_dir/js/modules/logic/Actions.js", HT_CTC_PLUGIN_FILE ) . $ver,
 						'tabs'   => array( 'advanced-settings' ),
 						'method' => 'initActions',
 					),
@@ -256,13 +273,13 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 					// initial bundle. registerManager('preview', …) lets PRO hook in
 					// via the ctc_manager_registered_preview event.
 					'preview'         => array(
-						'path'      => plugins_url( "new/admin2/assets/$assets_dir/js/modules/managers/PreviewManager.js", HT_CTC_PLUGIN_FILE ),
+						'path'      => plugins_url( "new/admin2/assets/$assets_dir/js/modules/managers/PreviewManager.js", HT_CTC_PLUGIN_FILE ) . $ver,
 						'managerId' => 'preview',
 						'delay'     => 1000,
 					),
 					'editor'          => array(
 						// $editor_module_filename is either BlockEditor.js or BlockEditorTinymce.js depending on the greetings_editor setting.
-						'path'       => plugins_url( "new/admin2/assets/$assets_dir/js/modules/components/layouts/BlockEditorTinymce.js", HT_CTC_PLUGIN_FILE ),
+						'path'       => plugins_url( "new/admin2/assets/$assets_dir/js/modules/components/layouts/BlockEditorTinymce.js", HT_CTC_PLUGIN_FILE ) . $ver,
 						'tabs'       => array( 'greetings-settings', 'woo-overwrite-settings' ),
 						// same as the php array key config (block_editor|block_editor_tinymce)
 						'rendererId' => 'block_editor_tinymce',
@@ -303,25 +320,46 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 		}
 
 		/**
-		 * Register and enqueue the intl-tel-input phone library.
+		 * Enqueue the intl-tel-input stylesheet.
 		 *
-		 * Registered on every allowed admin hook so that other pages can use it as a
-		 * dependency, but only enqueued on the main SPA page.
+		 * Only the stylesheet is enqueued: a stylesheet cannot be an ES module
+		 * import, whereas the library itself IS one — PhoneInput.js imports it
+		 * dynamically from the URL passed as paths.intlTelInput, so there is no
+		 * script to register here and no `intlTelInput` global on the page.
+		 *
+		 * The library is the shared vendored copy in new/tools/phone-field/intl-tel-input/ (29.x). The
+		 * 2019 admin keeps its own bundled 24.5.0 under new/admin/admin_assets/ —
+		 * the two admin trees no longer share intl assets.
+		 *
+		 * The stylesheet is enqueued (not injected from JS) so the number field
+		 * paints correctly on first render instead of flashing unstyled.
 		 *
 		 * @param string $hook Current admin page hook.
 		 * @return void
 		 */
 		private function enqueue_intl_tel_input( $hook ) {
 
-			wp_register_style( 'ctc_admin_intl_css', plugins_url( 'new/admin/admin_assets/intl/css/intlTelInput.min.css', HT_CTC_PLUGIN_FILE ), array(), HT_CTC_VERSION );
-			wp_register_script( 'ctc_admin_intl_js', plugins_url( 'new/admin/admin_assets/intl/js/intlTelInput.min.js', HT_CTC_PLUGIN_FILE ), array(), HT_CTC_VERSION, $this->script_strategy( 'defer' ) );
+			// This UI registers its own handle; HT_CTC_Phone_Field only says where
+			// the file is and which version it is (it resolves .min vs source from
+			// HT_CTC_DEBUG_MODE). Every consumer owns its handle the same way — PRO
+			// registers its own on the front end — so the vendored copy stays a
+			// plain locator with no assets of its own.
+			//
+			// Vendored upstream layout: the stylesheet resolves its flag sprites
+			// as url(../img/flags.webp), so both variants live at the vendored path
+			// (the .min is emitted next to its source by `npm run build`).
+			// Cache-buster is HT_CTC_VERSION, not the library version: every other
+			// plugin asset busts on release, and a release can change what this
+			// stylesheet has to work with (scoping edits, the .min rebuild) without
+			// the library version moving.
+			$phone_field_assets = HT_CTC_Phone_Field::assets();
+			wp_register_style( 'ctc_admin_intl_css', $phone_field_assets['css'], array(), HT_CTC_VERSION );
 
-			if ( 'toplevel_page_click-to-chat' !== $hook ) {
+			if ( self::SPA_HOOK !== $hook ) {
 				return;
 			}
 
 			wp_enqueue_style( 'ctc_admin_intl_css' );
-			wp_enqueue_script( 'ctc_admin_intl_js' );
 		}
 
 		/**
@@ -331,7 +369,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 		 * @return void
 		 */
 		private function enqueue_wp_media( $hook ) {
-			if ( 'toplevel_page_click-to-chat' !== $hook ) {
+			if ( self::SPA_HOOK !== $hook ) {
 				return;
 			}
 
@@ -348,7 +386,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 		 * @return void
 		 */
 		private function enqueue_wp_editor( $hook ) {
-			if ( 'toplevel_page_click-to-chat' !== $hook ) {
+			if ( self::SPA_HOOK !== $hook ) {
 				return;
 			}
 
@@ -405,11 +443,12 @@ if ( ! class_exists( 'HT_CTC_Admin_Page_Scripts' ) ) {
 
 			$js_url = plugins_url( "new/admin2/assets/$js", HT_CTC_PLUGIN_FILE );
 
-			// Per-page JS dependencies. Only pages that enqueue intl above need it as a dep.
+			// Per-page JS dependencies.
+			//
+			// intl-tel-input is deliberately NOT a dependency: it is an ES module
+			// that PhoneInput.js imports on demand, not an enqueued script, so the
+			// main bundle no longer has to wait on it.
 			$ctc_admin_js_dependencies = array();
-			if ( 'toplevel_page_click-to-chat' === $hook ) {
-				$ctc_admin_js_dependencies[] = 'ctc_admin_intl_js';
-			}
 
 			/**
 			 * Allow extensions to add JS dependencies for the main admin bundle on a per-hook basis.

@@ -4,7 +4,7 @@
  *
  * @package Click_To_Chat
  * @subpackage admin
- * @since 5.0
+ * @since 4.41
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -128,17 +128,20 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 			$show_warning       = ( '' !== $greetings_template && 'no' !== $greetings_template ) && ( 'open' === $g_init || 'default' === $g_init );
 
 			$values = array(
-				'field_type'      => 'card',
-				'title'           => __( 'Notification Badge', 'click-to-chat-for-whatsapp' ),
-				'description'     => 'Add a notification badge to attract attention',
-				'action_onchange' => 'updateNotificationBadgeLS', // any field change inside resets n_badge state (see Actions.js)
-				'fields'          => array(
+				'field_type'  => 'card',
+				'title'       => __( 'Notification Badge', 'click-to-chat-for-whatsapp' ),
+				'description' => 'Add a notification badge to attract attention',
+				// any field change inside resets n_badge state (see Actions.js)
+				'attributes'  => array(
+					'data-action-onchange' => 'updateNotificationBadgeLS',
+				),
+				'fields'      => array(
 					array(
 						'field_type'   => 'field_checkbox',
 						'id'           => 'notification_badge',
 						'label'        => __( 'Add Notification Badge', 'click-to-chat-for-whatsapp' ),
 						'option_group' => 'ht_ctc_othersettings',
-						// 'action_onchange' => 'some_function',
+						// 'attributes'   => array( 'data-action-onchange' => 'some_function' ),
 					),
 					array(
 						'field_type'     => 'field_number',
@@ -314,34 +317,20 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 						'id'           => 'enable_group',
 						'label'        => __( 'Enable Group Features', 'click-to-chat-for-whatsapp' ),
 						'option_group' => 'ht_ctc_othersettings',
-						'help'         => __( 'Adds WhatsApp Icon for Group', 'click-to-chat-for-whatsapp' ),
-					),
-					array(
-						'field_type'     => 'block_content',
-						'id'             => 'group_features_link',
-						'option_group'   => 'ht_ctc_othersettings',
-						'data_watch'     => '#enable_group',
-						'data_show_when' => '1',
-						// todo: check how its added in other places.. and update..
-						'content'        => '<a href="#group-settings" class="ctc-shortcut-link">' . __( 'Group Settings', 'click-to-chat-for-whatsapp' ) . ' <span class="dashicons dashicons-arrow-right-alt2"></span></a>',
-						'style'          => 'margin: 5px 0;',
+						'help'         => array(
+							__( 'Adds WhatsApp Icon for Group', 'click-to-chat-for-whatsapp' ),
+							'<span data-watch="#enable_group" data-show-when="1"><a href="#group-settings" class="ctc-shortcut-link">' . __( 'Group Settings', 'click-to-chat-for-whatsapp' ) . ' <span class="dashicons dashicons-arrow-right-alt2"></span></a></span>',
+						),
 					),
 					array(
 						'field_type'   => 'field_checkbox',
 						'id'           => 'enable_share',
 						'label'        => __( 'Enable Share Features', 'click-to-chat-for-whatsapp' ),
 						'option_group' => 'ht_ctc_othersettings',
-						'help'         => __( 'Adds WhatsApp Icon for Share', 'click-to-chat-for-whatsapp' ),
-					),
-					array(
-						'field_type'     => 'block_content',
-						'id'             => 'share_features_link',
-						'option_group'   => 'ht_ctc_othersettings',
-						'data_watch'     => '#enable_share',
-						'data_show_when' => '1',
-						// todo: check how its added in other places.. and update..
-						'content'        => '<a href="#share-settings" class="ctc-shortcut-link">' . sprintf( '%1$s %2$s', __( 'Share', 'click-to-chat-for-whatsapp' ), __( 'Settings', 'click-to-chat-for-whatsapp' ) ) . ' <span class="dashicons dashicons-arrow-right-alt2"></span></a>',
-						'style'          => 'margin: 5px 0;',
+						'help'         => array(
+							__( 'Adds WhatsApp Icon for Share', 'click-to-chat-for-whatsapp' ),
+							'<span data-watch="#enable_share" data-show-when="1"><a href="#share-settings" class="ctc-shortcut-link">' . sprintf( '%1$s %2$s', __( 'Share', 'click-to-chat-for-whatsapp' ), __( 'Settings', 'click-to-chat-for-whatsapp' ) ) . ' <span class="dashicons dashicons-arrow-right-alt2"></span></a></span>',
+						),
 					),
 				),
 			);
@@ -393,6 +382,20 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 			);
 
 			$fields[] = array(
+				'field_type'   => 'field_select',
+				'id'           => 'chat_wrapper_tag',
+				'label'        => 'Click Tracking Compatibility',
+				'option_group' => 'ht_ctc_othersettings',
+				'options'      => array(
+					''       => __( 'Default', 'click-to-chat-for-whatsapp' ),
+					'button' => 'Button (recommended for tracking)',
+					'a'      => 'Link',
+				),
+				'help'         => '(Beta Stage)',
+				'help_click'   => 'Some click tracking tools only detect clicks on link or button elements. This option provides compatibility with those tools. <br><br> <strong>Default:</strong> The widget works as usual. Recommended if no special click tracking tools are in use. <br> <strong>Button (recommended for tracking):</strong> Renders the click surface as a button element — widely detected by click tracking tools. <br> <strong>Link:</strong> Renders it as a link element. Note: For privacy, the WhatsApp link is created at click time, so the element itself has no URL — tools that expect a URL on the link may not record these clicks. <br><br> Applies to the main click surfaces — the chat button and the greetings call-to-action. Shortcodes and custom placements keep their own markup. - <a href="https://holithemes.com/plugins/click-to-chat/analytics/" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
+			);
+
+			$fields[] = array(
 				'field_type'   => 'field_checkbox',
 				'id'           => 'disable_page_level_settings',
 				'label'        => 'Disable Page level settings',
@@ -419,13 +422,16 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 			);
 
 			$fields[] = array(
-				'field_type'     => 'field_button',
-				'id'             => 'clear_plugin_cache',
-				'label'          => 'Force Refresh / Clear Cache',
-				'button_text'    => 'Force Refresh / Clear Cache',
-				'action_onclick' => 'clearPluginFieldsLocalStorage',
-				'class_field'    => 'button button-secondary',
-				'help'           => 'Clears the locally stored field configurations and refreshes the page to load fresh settings. Use this if you change settings like Disable TinyMCE or Disable Intl Input and the changes are not reflecting.',
+				'field_type'        => 'field_button',
+				'id'                => 'clear_plugin_cache',
+				'label'             => 'Force Refresh / Clear Cache',
+				'button_text'       => 'Force Refresh / Clear Cache',
+				// on the <button> itself, not the wrapper. handler: Actions.js ActionRegistry.
+				'button_attributes' => array(
+					'data-action-onclick' => 'clearPluginFieldsLocalStorage',
+				),
+				'class_field'       => 'button button-secondary',
+				'help'              => 'Clears the locally stored field configurations and refreshes the page to load fresh settings. Use this if you change settings like Disable TinyMCE or Disable Intl Input and the changes are not reflecting.',
 			);
 
 			// todo: add proper description

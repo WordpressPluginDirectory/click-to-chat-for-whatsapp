@@ -94,7 +94,7 @@ export default class PreviewManager {
 		// admin may still be editing CTA settings), so instead it adds a class
 		// that fully hides the CTA — and keeps it hidden through later open/close
 		// (it won't even reveal on hover). Any settings edit clears it, restoring
-		// the CTA to its normal behaviour. Set when the greeting opens (init +
+		// the CTA to its normal behavior. Set when the greeting opens (init +
 		// click-to-open), cleared in bindFormEvents.
 		this.ctaHardHidden = false;
 
@@ -226,6 +226,17 @@ export default class PreviewManager {
 		// widget previews now that the templates are available. Independent of
 		// the floating preview's on/off state.
 		this.enhanceStyleGrids();
+
+		// Re-render style picker previews on tab changes to ensure grid cells
+		// mounting dynamically after initial load get their live template HTML.
+		if ( this.app.events ) {
+			this.app.events.on( 'tab:changed', ( tabId ) => {
+				const styleTabs = [ 'general-settings' ];
+				if ( styleTabs.includes( tabId ) ) {
+					this.enhanceStyleGrids();
+				}
+			} );
+		}
 	}
 
 	/**
@@ -255,15 +266,21 @@ export default class PreviewManager {
 			return;
 		}
 
+		// Cache-buster: templatesBasePath is a directory, so PHP cannot append
+		// ?ver= as it does for module URLs. See module_url() in class-ht-ctc-admin-page-scripts.php.
+		const ver = this.app.config?.version ?
+			`?ver=${encodeURIComponent( this.app.config.version )}` :
+			'';
+
 		FREE_TEMPLATES.forEach( ( id ) => {
-			const url = `${base}style-${id}.js`;
+			const url = `${base}style-${id}.js${ver}`;
 			this.registry.registerStyle( id, () =>
 				// eslint-disable-next-line no-unsanitized/method -- URL is built from trusted plugin configuration localized by PHP
 				import( /* webpackIgnore: true */ url ) );
 		} );
 
 		FREE_GREETINGS.forEach( ( id ) => {
-			const url = `${base}${id}.js`;
+			const url = `${base}${id}.js${ver}`;
 			this.registry.registerGreeting( id, () =>
 				// eslint-disable-next-line no-unsanitized/method -- URL is built from trusted plugin configuration localized by PHP
 				import( /* webpackIgnore: true */ url ) );
@@ -931,6 +948,8 @@ export default class PreviewManager {
 			return;
 		}
 
+		// if ( cell._lastRenderedHtml === html ) { return; }
+
 		const stage = document.createElement( 'div' );
 		stage.className = 'ht_ctc_style ht_ctc_chat_style';
 		// eslint-disable-next-line no-unsanitized/property -- Templates escape all dynamic values (escapeHTML/escapeAttr/escapeCssValue)
@@ -950,6 +969,8 @@ export default class PreviewManager {
 		uniquifySvgIds( stage, `-cg${++this.gridUidCounter}` );
 
 		cell.replaceChildren( stage );
+
+		// cell._lastRenderedHtml = html;
 		cell.classList.add( 'has-live-preview' );
 	}
 
