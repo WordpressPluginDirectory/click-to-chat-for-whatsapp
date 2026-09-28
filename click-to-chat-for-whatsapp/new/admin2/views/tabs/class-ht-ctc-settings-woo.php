@@ -19,18 +19,6 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 	class HT_CTC_Settings_Woo {
 
 		/**
-		 * Get fields for Overwrite Settings
-		 *
-		 * @return array
-		 */
-		public static function fields_overwrite() {
-			if ( ! class_exists( 'WooCommerce' ) ) {
-				return array();
-			}
-			return array( self::card_woo_settings() );
-		}
-
-		/**
 		 * Get fields for Advanced/Add WhatsApp Settings
 		 *
 		 * @return array
@@ -40,6 +28,18 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 				return array();
 			}
 			return array( self::card_advanced_woo_settings() );
+		}
+
+		/**
+		 * Get fields for Overwrite Settings
+		 *
+		 * @return array
+		 */
+		public static function fields_overwrite() {
+			if ( ! class_exists( 'WooCommerce' ) ) {
+				return array();
+			}
+			return array( self::card_woo_settings() );
 		}
 
 		/**
@@ -55,11 +55,11 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 
 			$fields = array();
 
-			// WooCommerce Settings
-			$fields[] = self::card_woo_settings();
-
-			// Advanced WooCommerce Settings
+			// Advanced WooCommerce Settings (Add WhatsApp)
 			$fields[] = self::card_advanced_woo_settings();
+
+			// WooCommerce Settings (Overwrite)
+			$fields[] = self::card_woo_settings();
 
 			return $fields;
 		}
@@ -91,7 +91,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 					'label'      => __( 'Style-3', 'click-to-chat-for-whatsapp' ),
 					'attributes' => array( 'data-contextual-id' => 'style_3' ),
 				),
-				'3_1' => array( // phpcs:ignore Universal.Arrays.DuplicateArrayKey.Found
+				'3_1' => array( // phpcs:ignore Universal.Arrays.DuplicateArrayKey.Found -- Key with underscore is distinct string in PHP associative array.
 					'label'      => __( 'Style-3 Extend', 'click-to-chat-for-whatsapp' ),
 					'attributes' => array( 'data-contextual-id' => 'style_3_1' ),
 				),
@@ -107,7 +107,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 					'label'      => __( 'Style-7', 'click-to-chat-for-whatsapp' ),
 					'attributes' => array( 'data-contextual-id' => 'style_7' ),
 				),
-				'7_1' => array( // phpcs:ignore Universal.Arrays.DuplicateArrayKey.Found
+				'7_1' => array( // phpcs:ignore Universal.Arrays.DuplicateArrayKey.Found -- Key with underscore is distinct string in PHP associative array.
 					'label'      => __( 'Style-7 Extend', 'click-to-chat-for-whatsapp' ),
 					'attributes' => array( 'data-contextual-id' => 'style_7_1' ),
 				),
@@ -220,14 +220,14 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 					'content'    => vsprintf(
 						'At <a target="_blank" href="%1$s" class="external-link">%2$s %3$s <span class="dashicons dashicons-external"></span></a> can overwrite: %4$s, %5$s, %6$s, %7$s. <br>(<a target="_blank" href="%8$s" class="external-link">PRO <span class="dashicons dashicons-external"></span></a>: Greetings, Style, %9$s)',
 						array(
-							'https://holithemes.com/plugins/click-to-chat/change-values-at-page-level/',
+							esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/change-values-at-page-level/' ) ),
 							__( 'Page level', 'click-to-chat-for-whatsapp' ),
 							__( 'Settings', 'click-to-chat-for-whatsapp' ),
 							__( 'Number', 'click-to-chat-for-whatsapp' ),
 							__( 'Call to Action', 'click-to-chat-for-whatsapp' ),
 							__( 'Pre-filled Message', 'click-to-chat-for-whatsapp' ),
 							__( 'Display Settings', 'click-to-chat-for-whatsapp' ),
-							'https://holithemes.com/plugins/click-to-chat/pricing/',
+							esc_url( HT_CTC_Utils::pro_url( 'inline', 'woo_page_level' ) ),
 							__( 'Time, Scroll Delay', 'click-to-chat-for-whatsapp' ),
 						)
 					),
@@ -278,7 +278,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 										array(
 											'field_type' => 'block_external_link',
 											'id'         => 'woo_single_product_pages_doc',
-											'url'        => 'https://holithemes.com/plugins/click-to-chat/woocommerce-single-product-pages/',
+											'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/woocommerce-single-product-pages/' ),
 											'label'      => 'WooCommerce Single Product pages',
 											// 'label'      => 'View Documentation'
 										),
@@ -340,13 +340,12 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 			if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
 				$advanced_fields[] = array(
 					'field_type'  => 'block_pro_feature',
+					'icon'        => 'dashicons dashicons-clock',
 					'title'       => 'Apply Business Hours',
 					'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
-					'description' => 'Apply business hours settings to WhatsApp added in WooCommerce Pages (single product, Shop)',
-					'control'     => array(
-						'type'     => 'switch',
-						'disabled' => true,
-					),
+					'description' => 'Let the shop and product-page buttons follow the same opening hours — going offline, or switching to another number, when you close.',
+					'button_text' => 'Learn more',
+					'url'         => HT_CTC_Utils::pro_url( 'teaser', 'woo_business_hours', 'https://holithemes.com/plugins/click-to-chat/docs/business-hours-online-offline/' ),
 				);
 			}
 
@@ -366,7 +365,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 									array(
 										'field_type' => 'block_external_link',
 										'id'         => 'woo_single_product_pages',
-										'url'        => 'https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/',
+										'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/' ),
 										'label'      => 'Add WhatsApp in WooCommerce Single Product pages',
 									),
 									array(
@@ -400,7 +399,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 										'options'        => $style_options,
 										'help'           => sprintf(
 											'<a target="_blank" href="%1$s" class="external-link">%2$s <span class="dashicons dashicons-external"></span></a> <br> <strong>%3$s: 1, 4, 8</strong>',
-											'https://holithemes.com/plugins/click-to-chat/list-of-styles/',
+											esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/list-of-styles/' ) ),
 											__( 'List of Styles', 'click-to-chat-for-whatsapp' ),
 											'Recommended Styles'
 										),
@@ -465,7 +464,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 										'field_type' => 'block_external_link',
 										'id'         => 'woo_shop_page',
 										'label'      => 'WooCommerce Shop page',
-										'url'        => 'https://holithemes.com/plugins/click-to-chat/whatsapp-chat-in-woocommerce-shop-page/',
+										'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/whatsapp-chat-in-woocommerce-shop-page/' ),
 									),
 									// filed_type: block_variables
 									self::variables_reference(),
@@ -519,7 +518,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Woo' ) ) {
 													'options' => $style_options,
 													'help' => sprintf(
 														'<a target="_blank" href="%1$s" class="external-link">%2$s <span class="dashicons dashicons-external"></span></a> <br> <strong>%3$s: 1, 8</strong>',
-														'https://holithemes.com/plugins/click-to-chat/list-of-styles/',
+														esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/list-of-styles/' ) ),
 														__( 'List of Styles', 'click-to-chat-for-whatsapp' ),
 														'Recommended Styles'
 													),

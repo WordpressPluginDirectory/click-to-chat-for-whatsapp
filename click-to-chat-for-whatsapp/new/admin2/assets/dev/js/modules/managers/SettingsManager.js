@@ -410,9 +410,13 @@ export default class SettingsManager {
 			const path = keys[ 1 ] + keys.slice( 2 )
 				.map( key => `[${key}]` )
 				.join( '' );
+
+			// if ( ! remove[ group ] ) { remove[ group ] = []; }
 			if ( ! getSafeProperty( remove, group ) ) {
 				setSafeProperty( remove, group, [] );
 			}
+
+			// const list = remove[ group ];
 			const list = getSafeProperty( remove, group );
 			if ( ! list.includes( path ) ) { list.push( path ); }
 		};
@@ -454,22 +458,31 @@ export default class SettingsManager {
 					// Complex nested array: group[sub][]
 					keys.forEach( ( key, i ) => {
 						if ( i === keys.length - 1 ) {
+							// if ( ! current[ key ] ) { current[ key ] = []; }
 							if ( ! getSafeProperty( current, key ) ) {
 								setSafeProperty( current, key, [] );
 							}
+
+							// current = current[ key ];
 							current = getSafeProperty( current, key );
 						} else {
+							// if ( ! current[ key ] ) { current[ key ] = {}; }
 							if ( ! getSafeProperty( current, key ) ) {
 								setSafeProperty( current, key, {} );
 							}
+
+							// current = current[ key ];
 							current = getSafeProperty( current, key );
 						}
 					} );
 				} else {
 					// Simple array: tags[]
+					// if ( ! settings[ baseName ] ) { settings[ baseName ] = []; }
 					if ( ! getSafeProperty( settings, baseName ) ) {
 						setSafeProperty( settings, baseName, [] );
 					}
+
+					// current = settings[ baseName ];
 					current = getSafeProperty( settings, baseName );
 				}
 
@@ -533,6 +546,7 @@ export default class SettingsManager {
 
 				setNestedValue( settings, keys, value );
 			} else {
+				// settings[ name ] = value;
 				setSafeProperty( settings, name, value );
 			}
 		} );
@@ -786,9 +800,6 @@ export default class SettingsManager {
 	/**
 	 * Recursively update form inputs with data from the server.
 	 * Matches inputs by name attribute using bracket notation.
-	 *
-	 * todo: have to test intl-tel number field (as hidden field have value)
-	 * todo: also check class-ht-ctc-formatting -> wa_number(); related changes.
 	 *
 	 * @param {HTMLFormElement} form
 	 * @param {Object} data

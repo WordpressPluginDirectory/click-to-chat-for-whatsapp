@@ -212,10 +212,9 @@ if ( ! class_exists( 'HT_CTC_Admin_Hooks' ) ) {
 					add_action( 'admin_footer', array( $this, 'admin_pro_notice_scripts' ) );
 				}
 
-				// Global display - during development/testing if needed, or if specifically requested.
-				// For now, let's ensure it follows the 5-day rule or is always shown if required.
-				// Based on user request, ensuring it displays efficiently everywhere.
-				// to-do: comment this lines..
+				// (for testing) shows the pro notice on every admin screen, bypassing the
+				// not-yet-installed / dismissed / 5-day conditions above. Keep them commented -
+				// if you uncomment the lines below, add a 'todo(release):' so they cannot ship enabled.
 				// add_action( 'admin_notices', array( $this, 'pro_notice' ) );
 				// add_action( 'admin_footer', array( $this, 'admin_pro_notice_scripts' ) );
 			}
@@ -268,7 +267,7 @@ if ( ! class_exists( 'HT_CTC_Admin_Hooks' ) ) {
 			<p>
 				<strong><?php esc_html_e( 'Click to Chat', 'click-to-chat-for-whatsapp' ); ?>:</strong>
 				Please update Click to Chat PRO to v2.21 or higher.
-				Your chat button and current settings will keep working as they are &mdash; this update brings PRO in line with the new admin interface, and it will be needed for settings changes in upcoming versions.
+				Your chat widget and current settings will keep working as they are &mdash; this update brings PRO in line with the new admin interface, and it will be needed for settings changes in upcoming versions.
 				<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>">Update Click to Chat PRO</a>
 				&nbsp;&middot;&nbsp;
 				If the update is not showing, <a href="https://holithemes.com/shop/download-click-to-chat-pro-compatible-version/" target="_blank" rel="noopener">download the compatible version</a>.

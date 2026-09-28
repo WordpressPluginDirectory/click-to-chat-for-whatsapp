@@ -17,7 +17,6 @@ if ( ! class_exists( 'HT_CTC_Chat' ) ) {
 	 */
 	class HT_CTC_Chat {
 
-
 		/**
 		 * Constructor.
 		 *
@@ -44,7 +43,6 @@ if ( ! class_exists( 'HT_CTC_Chat' ) ) {
 			add_action( "$chat_load_hook", array( $this, 'chat' ) );
 		}
 
-
 		/**
 		 * Validate HTTP/HTTPS URL.
 		 *
@@ -56,7 +54,6 @@ if ( ! class_exists( 'HT_CTC_Chat' ) ) {
 			filter_var( $url, FILTER_VALIDATE_URL ) &&
 			in_array( wp_parse_url( $url, PHP_URL_SCHEME ), array( 'http', 'https' ), true );
 		}
-
 
 		/**
 		 * Chat
@@ -169,7 +166,7 @@ if ( ! class_exists( 'HT_CTC_Chat' ) ) {
 				} elseif ( function_exists( 'is_tax' ) && function_exists( 'single_term_title' ) && is_tax() ) {
 					$post_title = single_term_title( '', false );
 				} elseif ( function_exists( 'get_the_archive_title' ) ) {
-						$post_title = get_the_archive_title();
+					$post_title = esc_html( wp_strip_all_tags( get_the_archive_title() ) );
 				}
 			}
 

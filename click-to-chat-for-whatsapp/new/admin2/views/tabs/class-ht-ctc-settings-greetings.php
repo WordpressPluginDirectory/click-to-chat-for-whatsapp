@@ -75,7 +75,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 		 * Marketing copy only — no PRO option keys are referenced.
 		 */
 		private static function card_pro_greetings() {
-			$pricing_url = 'https://holithemes.com/plugins/click-to-chat/pricing/';
+			$pricing_url = HT_CTC_Utils::pro_url( 'teaser', 'greetings' );
 
 			return array(
 				'field_type'     => 'card',
@@ -92,29 +92,29 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 						'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
 						'description' => 'Collect name, email, phone and more before the chat opens — 8 field types including date and international number.',
 						'button_text' => 'Learn more',
-						'url'         => 'https://holithemes.com/plugins/click-to-chat/greetings-form/',
+						'url'         => HT_CTC_Utils::pro_url( 'teaser', 'greetings_form', 'https://holithemes.com/plugins/click-to-chat/greetings-form/' ),
 					),
 					array(
 						'field_type'  => 'block_pro_feature',
 						'icon'        => 'dashicons dashicons-groups',
 						'title'       => 'Multi-Agent Greetings',
 						'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
-						'description' => 'Let visitors pick the right agent or department from a single greeting dialog.',
+						'description' => 'Let visitors pick an agent — each with a photo, a role, their own number and their own weekly hours.',
 						'button_text' => 'Learn more',
-						'url'         => 'https://holithemes.com/plugins/click-to-chat/multi-agent/',
+						'url'         => HT_CTC_Utils::pro_url( 'teaser', 'multi_agent', 'https://holithemes.com/plugins/click-to-chat/multi-agent/' ),
 					),
 					array(
 						'field_type'  => 'block_pro_feature',
 						'icon'        => 'dashicons dashicons-controls-play',
 						'title'       => 'Auto-Open Triggers',
 						'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
-						'description' => 'Open the greeting automatically by time delay, scroll depth, element viewport or click.',
+						'description' => 'Open the greeting after a set number of seconds, or at a scroll percentage — or when a section you mark with a CSS class scrolls into view.',
 						'button_text' => 'Learn more',
-						'url'         => 'https://holithemes.com/plugins/click-to-chat/greetings-actions/',
+						'url'         => HT_CTC_Utils::pro_url( 'teaser', 'greetings_actions', 'https://holithemes.com/plugins/click-to-chat/greetings-actions/' ),
 					),
 					array(
 						'field_type' => 'block_raw_html',
-						'content'    => '<a href="' . esc_url( $pricing_url ) . '" target="_blank" rel="noopener" class="ctc-pro-btn ctc-pro-btn-primary ctc-pro-teaser-cta">See all PRO features <span class="dashicons dashicons-arrow-right-alt"></span></a>',
+						'content'    => '<a href="' . esc_url( $pricing_url ) . '" target="_blank" rel="noopener" class="ctc-pro-btn ctc-pro-btn-primary ctc-pro-teaser-cta">Upgrade to PRO <span class="dashicons dashicons-external"></span><span class="screen-reader-text">(opens in a new tab)</span></a>',
 					),
 				),
 			);
@@ -138,11 +138,10 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 						'option_group' => 'ht_ctc_greetings_options',
 						'class_pr'     => 'ctc-greetings-grid',
 						'options'      => self::greetings_templates(),
-						'help'         => '<span class="ctc-help-links-group"><a href="https://holithemes.com/plugins/click-to-chat/greetings/" target="_blank" class="external-link">Greetings <span class="dashicons dashicons-external"></span></a><a href="https://holithemes.com/plugins/click-to-chat/greetings-1/" target="_blank" class="external-link">Greetings-1 <span class="dashicons dashicons-external"></span></a><a href="https://holithemes.com/plugins/click-to-chat/greetings-2/" target="_blank" class="external-link">Greetings-2 <span class="dashicons dashicons-external"></span></a><a href="https://holithemes.com/plugins/click-to-chat/greetings-form/" target="_blank" class="external-link">Form Filling <span class="dashicons dashicons-external"></span></a><a href="https://holithemes.com/plugins/click-to-chat/multi-agent/" target="_blank" class="external-link">Multi Agent <span class="dashicons dashicons-external"></span></a></span>',
+						'help'         => '<span class="ctc-help-links-group"><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings/' ) ) . '" target="_blank" class="external-link">Greetings <span class="dashicons dashicons-external"></span></a><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-1/' ) ) . '" target="_blank" class="external-link">Greetings-1 <span class="dashicons dashicons-external"></span></a><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-2/' ) ) . '" target="_blank" class="external-link">Greetings-2 <span class="dashicons dashicons-external"></span></a><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-form/' ) ) . '" target="_blank" class="external-link">Form Filling <span class="dashicons dashicons-external"></span></a><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/multi-agent/' ) ) . '" target="_blank" class="external-link">Multi Agent <span class="dashicons dashicons-external"></span></a></span>',
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_greetings_select_greetings_template', $values );
 			return $values;
 		}
 
@@ -233,7 +232,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'id'           => 'bottom_content',
 					'label'        => __( 'Bottom Content', 'click-to-chat-for-whatsapp' ),
 					'option_group' => 'ht_ctc_greetings_options',
-					'help'         => '&#128994; <a href="https://holithemes.com/plugins/click-to-chat/symbols/" target="_blank" class="external-link">Symbols <span class="dashicons dashicons-external"></span></a>' . $tinymce_help,
+					'help'         => '&#128994; <a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/symbols/' ) ) . '" target="_blank" class="external-link">Symbols <span class="dashicons dashicons-external"></span></a>' . $tinymce_help,
 				),
 				array(
 					'field_type'   => 'field_text',
@@ -351,7 +350,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/docs/greetings-1/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/docs/greetings-1/' ),
 						'label'      => 'Greetings-1',
 						'icon'       => 'dashicons dashicons-external',
 					),
@@ -390,7 +389,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/docs/greetings-2/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/docs/greetings-2/' ),
 						'label'      => 'Greetings-2',
 						'icon'       => 'dashicons dashicons-external',
 					),
@@ -428,7 +427,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 						'id'           => 'is_opt_in',
 						'label'        => 'Enable Opt-in',
 						'option_group' => 'ht_ctc_greetings_settings',
-						'help'         => 'Get website visitors\' consent before initiating the chat.<br><strong>Once the website visitor opts in, the consent prompt will not reappear</strong>.<br><a href="https://holithemes.com/plugins/click-to-chat/opt-in/" target="_blank" class="external-link">Opt-in <span class="dashicons dashicons-external"></span></a>',
+						'help'         => 'Get website visitors\' consent before initiating the chat.<br><strong>Once the website visitor opts in, the consent prompt will not reappear</strong>.<br><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/opt-in/' ) ) . '" target="_blank" class="external-link">Opt-in <span class="dashicons dashicons-external"></span></a>',
 					),
 					array(
 						'field_type'     => $editor_type,
@@ -476,10 +475,10 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 						'label'        => 'Greetings dialog Position',
 						'option_group' => 'ht_ctc_greetings_settings',
 						'options'      => array(
-							'next'  => 'Next to the Chat Button',
+							'next'  => 'Next to the Chat Widget',
 							'modal' => 'Modal Dialog (Centered)',
 						),
-						'help_click'   => '<strong>Next to the Chat Button</strong>: Default - positions the greetings near the chat icon<br><strong>Modal Dialog</strong>: Displays at the center of the screen with a dimmed background.<br> <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-position" class="external-link">Learn more <span class="dashicons dashicons-external"></span></a>',
+						'help_click'   => '<strong>Next to the Chat Widget</strong>: Default - positions the greetings near the chat icon<br><strong>Modal Dialog</strong>: Displays at the center of the screen with a dimmed background.<br> <a target="_blank" href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-position' ) ) . '" class="external-link">Learn more <span class="dashicons dashicons-external"></span></a>',
 						// 'help'         => '<strong>Next to the Chat Button</strong>: Default - positions the greetings near the chat icon<br><strong>Modal Dialog</strong>: Displays at the center of the screen with a dimmed background.<br><em>Note:</em> <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-position" class="external-link">Learn more <span class="dashicons dashicons-external"></span></a>',
 						// 'help'         => '<strong>Next to the Chat Button:</strong> Positions the greetings dialog relative to the floating chat button. <br><strong>Modal Dialog:</strong> Displays at the center of the screen with a dimmed background overlay.<br><em>Note:</em> <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-position" class="external-link">Learn more <span class="dashicons dashicons-external"></span></a>',
 					),
@@ -504,7 +503,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 							'open'    => 'Open',
 							'close'   => 'Close',
 						),
-						'help_click'   => '<strong>Preset:</strong> Recommended - On first visit, opens automatically on desktop and stays closed on mobile — further behavior is based on user interaction. <br> <strong>Open:</strong> Displays the greetings dialog on page load or when triggered by actions. If the user closes the dialog, it remains closed and will not reopen automatically unless triggered again. <br> <strong>Close:</strong> Hidden until the user initiates the chat or triggers greeting actions - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-initial-stage" class="external-link">' . __( 'more info', 'click-to-chat-for-whatsapp' ) . ' <span class="dashicons dashicons-external"></span></a>',
+						'help_click'   => '<strong>Preset:</strong> Recommended - On first visit, opens automatically on desktop and stays closed on mobile — further behavior is based on user interaction. <br> <strong>Open:</strong> Displays the greetings dialog on page load or when triggered by actions. If the user closes the dialog, it remains closed and will not reopen automatically unless triggered again. <br> <strong>Close:</strong> Hidden until the user initiates the chat or triggers greeting actions - <a target="_blank" href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-initial-stage' ) ) . '" class="external-link">' . __( 'more info', 'click-to-chat-for-whatsapp' ) . ' <span class="dashicons dashicons-external"></span></a>',
 						// 'help'         => '<strong>Preset:</strong> Recommended. Automatically opens on desktop for first-time visitors and stays closed on mobile. <br> <strong>Open:</strong> Always opens on page load. Once closed by a user, it remains closed for that session. <br> <strong>Close:</strong> Remains hidden until the user clicks the chat button or a trigger action occurrs. - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-initial-stage" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
 					),
 				),
@@ -525,9 +524,9 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'value'    => 'no',
 					'name'     => 'Disable',
 					'icon'     => 'dashicons dashicons-dismiss',
-					// 'description' => 'No greetings dialog — chat button only',
-					'sub_text' => 'No greetings dialog — chat button only',
-					// 'sub_text' => 'Displays only the chat button without a greetings dialog.',
+					// 'description' => 'No greetings dialog — chat widget only',
+					'sub_text' => 'No greetings dialog — chat widget only',
+					// 'sub_text' => 'Displays only the chat widget without a greetings dialog.',
 					// this is the image placeholder for grid select
 					// 'image'    => 'https://example.com/200x140?text=Disabled',
 				),
@@ -602,7 +601,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 				array(
 					'field_type' => 'block_content',
 					'class_pr'   => 'ctc-actions-intro',
-					'content'    => '<p class="description"><a href="https://holithemes.com/plugins/click-to-chat/greetings-actions/" target="_blank">Greetings Actions:</a> Open the greetings dialog automatically — after a time delay or page scroll, or when a visitor interacts with the page.</p>',
+					'content'    => '<p class="description"><a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-actions/' ) ) . '" target="_blank">Greetings Actions:</a> Open the greetings dialog automatically — after a time delay or page scroll, or when a visitor interacts with the page.</p>',
 				),
 				array(
 					'field_type'  => 'block_feature_box',
@@ -612,7 +611,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'badge'       => 'Interaction',
 					'badge_class' => 'interaction',
 					'link'        => array(
-						'url'   => 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#click',
+						'url'   => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#click' ),
 						'label' => __( 'more info', 'click-to-chat-for-whatsapp' ),
 					),
 					'content'     => 'Opens the greetings dialog when a visitor clicks any element with class name <code class="ctc-feature-code">ctc_greetings</code>.',
@@ -625,7 +624,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
 					'badge_class' => 'pro',
 					'link'        => array(
-						'url'   => 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#viewport',
+						'url'   => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#viewport' ),
 						'label' => __( 'more info', 'click-to-chat-for-whatsapp' ),
 					),
 					'content'     => 'Opens the greetings dialog when an element with class name <code class="ctc-feature-code">ctc_greetings_now</code> scrolls into view (25% margin).',
@@ -645,7 +644,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
 					'badge_class' => 'pro',
 					'link'        => array(
-						'url'   => 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#time-delay',
+						'url'   => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#time-delay' ),
 						'label' => __( 'more info', 'click-to-chat-for-whatsapp' ),
 					),
 					'content'     => 'Automatically opens the dialog after a configurable time delay on the page.',
@@ -658,19 +657,11 @@ if ( ! class_exists( 'HT_CTC_Settings_Greetings' ) ) {
 					'badge'       => __( 'PRO', 'click-to-chat-for-whatsapp' ),
 					'badge_class' => 'pro',
 					'link'        => array(
-						'url'   => 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#scroll-depth',
+						'url'   => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/greetings-actions/#scroll-depth' ),
 						'label' => __( 'more info', 'click-to-chat-for-whatsapp' ),
 					),
 					'content'     => 'Automatically opens the dialog when the visitor scrolls a percentage of the page.',
 				);
-				// a pricing page after the list of feature might be better.
-				// $fields[] = array(
-				// 'field_type'  => 'block_pro_feature',
-				// 'title'       => 'Greetings Auto-Open Triggers',
-				// 'description' => 'Automatically open the greetings dialog by time delay, scroll depth, or element viewport.',
-				// 'button_text' => 'Upgrade to PRO',
-				// 'url'         => 'https://holithemes.com/plugins/click-to-chat/pricing/',
-				// );
 			}
 
 			$values = array(

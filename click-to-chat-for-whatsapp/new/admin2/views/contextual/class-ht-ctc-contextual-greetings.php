@@ -148,20 +148,13 @@ if ( ! class_exists( 'HT_CTC_Contextual_Greetings' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/docs/greetings-1/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/docs/greetings-1/' ),
 						'label'      => 'Greetings-1',
 						'icon'       => 'dashicons dashicons-external',
 					),
 				),
 			);
 
-			/*
-			 * Deliberately NOT the card's own filter name. The card still fires
-			 * ht_ctc_fh_settings_fields_greetings_greetings_style_1 with a card array; reusing
-			 * it here would put two different shapes behind one hook, and a consumer reading
-			 * the card's keys would silently mis-handle whichever call arrived second.
-			 */
-			// $values = apply_filters( 'ht_ctc_fh_contextual_fields_greetings_1', $values );
 			return $values;
 		}
 
@@ -198,15 +191,13 @@ if ( ! class_exists( 'HT_CTC_Contextual_Greetings' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/docs/greetings-2/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/docs/greetings-2/' ),
 						'label'      => 'Greetings-2',
 						'icon'       => 'dashicons dashicons-external',
 					),
 				),
 			);
 
-			// // Own filter name, for the reason given on greetings-1 above.
-			// $values = apply_filters( 'ht_ctc_fh_contextual_fields_greetings_2', $values );
 			return $values;
 		}
 	}

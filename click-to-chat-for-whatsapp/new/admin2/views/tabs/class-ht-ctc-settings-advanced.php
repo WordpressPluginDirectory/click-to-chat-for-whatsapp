@@ -105,13 +105,12 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/animations/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/animations/' ),
 						'label'      => __( 'Animations', 'click-to-chat-for-whatsapp' ),
 						'icon'       => 'dashicons dashicons-external',
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_animations', $values );
 			return $values;
 		}
 
@@ -199,7 +198,6 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 					array(
 						'field_type'     => 'block_group',
-						// todo: it seems block_rows is not using id.
 						'id'             => 'notification_badge_greetings_wrap',
 						'class_pr'       => ( $show_warning ) ? '' : 'ctc_init_display_none',
 						'data_watch'     => '#notification_badge',
@@ -225,13 +223,12 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/notification-badge/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/notification-badge/' ),
 						'label'      => __( 'Notification Badge', 'click-to-chat-for-whatsapp' ),
 						'icon'       => 'dashicons dashicons-external',
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_notification_badge', $values );
 			return $values;
 		}
 
@@ -254,13 +251,12 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 					array(
 						'field_type' => 'block_external_link',
-						'url'        => 'https://holithemes.com/plugins/click-to-chat/custom-css/',
+						'url'        => HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/custom-css/' ),
 						'label'      => 'CSS Code',
 						'icon'       => 'dashicons dashicons-external',
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_custom_css', $values );
 			return $values;
 		}
 
@@ -284,7 +280,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 						'help'         => sprintf(
 							'%1$s - <br><a target="_blank" href="%2$s" class="external-link">%3$s <span class="dashicons dashicons-external"></span></a>',
 							__( 'z-index value for the chat widget to ensure proper stacking and visibility', 'click-to-chat-for-whatsapp' ),
-							'https://holithemes.com/plugins/click-to-chat/z-index/',
+							esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/z-index/' ) ),
 							__( 'more info', 'click-to-chat-for-whatsapp' )
 						),
 					),
@@ -297,7 +293,6 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_advanced_settings', $values );
 			return $values;
 		}
 
@@ -334,7 +329,6 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					),
 				),
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_group_share_features', $values );
 			return $values;
 		}
 
@@ -344,13 +338,15 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 		private static function card_debug_troubleshoot() {
 			$fields = array();
 
+			// Note: Tab field definitions are cached in browser localStorage. Enabling or
+			// disabling the AMP plugin will only reflect in the admin UI once localStorage is cleared.
 			if ( function_exists( 'amp_is_request' ) ) {
 				$fields[] = array(
 					'field_type'   => 'field_checkbox',
 					'id'           => 'amp',
 					'label'        => __( 'AMP Compatibility', 'click-to-chat-for-whatsapp' ),
 					'option_group' => 'ht_ctc_othersettings',
-					'help'         => 'If any issue, uncheck this option and please contact us - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/amp-compatibility/" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
+					'help'         => 'If any issue, uncheck this option and please contact us - <a target="_blank" href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/amp-compatibility/' ) ) . '" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
 				);
 			}
 
@@ -364,7 +360,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					'get_footer' => 'get_footer',
 					'wp_head'    => 'wp_head',
 				),
-				'help'         => 'If the chat widget is not working with the wp_footer hook, change to get_footer or wp_head - <a href="https://holithemes.com/plugins/click-to-chat/chat-load-hook/" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
+				'help'         => 'If the chat widget is not working with the wp_footer hook, change to get_footer or wp_head - <a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/chat-load-hook/' ) ) . '" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
 			);
 
 			$fields[] = array(
@@ -378,7 +374,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					'defer' => 'Defer',
 					'async' => 'Async',
 				),
-				'help'         => 'Async: load js files asynchronously <br> Defer: load asynchronously and execute after the DOM is loaded -<a href="https://holithemes.com/plugins/click-to-chat/docs/load-javascript-files/" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>.',
+				'help'         => 'Async: load js files asynchronously <br> Defer: load asynchronously and execute after the DOM is loaded -<a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/docs/load-javascript-files/' ) ) . '" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>.',
 			);
 
 			$fields[] = array(
@@ -392,7 +388,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 					'a'      => 'Link',
 				),
 				'help'         => '(Beta Stage)',
-				'help_click'   => 'Some click tracking tools only detect clicks on link or button elements. This option provides compatibility with those tools. <br><br> <strong>Default:</strong> The widget works as usual. Recommended if no special click tracking tools are in use. <br> <strong>Button (recommended for tracking):</strong> Renders the click surface as a button element — widely detected by click tracking tools. <br> <strong>Link:</strong> Renders it as a link element. Note: For privacy, the WhatsApp link is created at click time, so the element itself has no URL — tools that expect a URL on the link may not record these clicks. <br><br> Applies to the main click surfaces — the chat button and the greetings call-to-action. Shortcodes and custom placements keep their own markup. - <a href="https://holithemes.com/plugins/click-to-chat/analytics/" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
+				'help_click'   => 'Some click tracking tools only detect clicks on link or button elements. This option provides compatibility with those tools. <br><br> <strong>Default:</strong> The widget works as usual. Recommended if no special click tracking tools are in use. <br> <strong>Button (recommended for tracking):</strong> Renders the click surface as a button element — widely detected by click tracking tools. <br> <strong>Link:</strong> Renders it as a link element. Note: For privacy, the WhatsApp link is created at click time, so the element itself has no URL — tools that expect a URL on the link may not record these clicks. <br><br> Applies to the main click surfaces — the chat widget and the greetings call-to-action. Shortcodes and custom placements keep their own markup. - <a href="' . esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/analytics/' ) ) . '" target="_blank" class="external-link">more info <span class="dashicons dashicons-external"></span></a>',
 			);
 
 			$fields[] = array(
@@ -434,7 +430,6 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 				'help'              => 'Clears the locally stored field configurations and refreshes the page to load fresh settings. Use this if you change settings like Disable TinyMCE or Disable Intl Input and the changes are not reflecting.',
 			);
 
-			// todo: add proper description
 			$fields[] = array(
 				'field_type'   => 'field_checkbox',
 				'id'           => 'delete_options',
@@ -447,7 +442,7 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 				'field_type' => 'block_content',
 				'content'    => sprintf(
 					'<p>Any issues related to the Click to Chat plugin? Please <br><a href="%1$s" target="_blank" class="external-link">%2$s <span class="dashicons dashicons-external"></span></a></p>',
-					'https://holithemes.com/plugins/click-to-chat/support',
+					esc_url( HT_CTC_Utils::doc_url( 'https://holithemes.com/plugins/click-to-chat/support' ) ),
 					__( 'Contact Us', 'click-to-chat-for-whatsapp' )
 				),
 			);
@@ -456,12 +451,10 @@ if ( ! class_exists( 'HT_CTC_Settings_Advanced' ) ) {
 				'field_type' => 'card',
 				'title'      => __( 'Debug, Troubleshoot, ..', 'click-to-chat-for-whatsapp' ),
 				// 'title'       => 'Debug & Troubleshooting',
-				// todo: update description
 				// 'description' => 'Tools for resolving technical issues and managing compatibility.',
 				'id'         => 'debug_troubleshoot',
 				'fields'     => $fields,
 			);
-			// $values = apply_filters( 'ht_ctc_fh_settings_fields_advanced_debug_troubleshoot', $values );
 			return $values;
 		}
 	}

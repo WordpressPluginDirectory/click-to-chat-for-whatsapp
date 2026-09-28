@@ -29,10 +29,6 @@ if ( ! class_exists( 'HT_CTC_Utils' ) ) {
 		 * @return bool True if file loaded successfully, false otherwise.
 		 */
 		public static function load_file( $file_path ) {
-			// if ( ! defined( 'HT_CTC_PLUGIN_DIR' ) ) {
-			// return false;
-			// }
-
 			// Security: strictly prevent any path traversal attempt.
 			if ( false !== strpos( $file_path, '..' ) ) {
 				return false;
@@ -152,60 +148,8 @@ if ( ! class_exists( 'HT_CTC_Utils' ) ) {
 				}
 			}
 
-			// $default_values = apply_filters('ht_ctc_fh_default_values', $default_values, $option_name);
 			return $default_values;
 		}
-
-
-		/**
-		 * Get option cached..
-		 */
-		// public static function get_option_cached($option_name, $if_not_exist_in_db = false) {
-
-		// static $merged_cache = array();
-
-		// if (isset($merged_cache[$option_name])) {
-		// return $merged_cache[$option_name];
-		// }
-
-		// $value = get_option($option_name);
-
-		// static $ht_ctc_defaults = null;
-
-		// if (null === $ht_ctc_defaults) {
-		// if (!class_exists('HT_CTC_Defaults')) {
-		// self::load_class('new/admin/db/defaults/class-ht-ctc-defaults.php', 'HT_CTC_Defaults');
-		// }
-
-		// if (class_exists('HT_CTC_Defaults')) {
-		// $ht_ctc_defaults = new HT_CTC_Defaults();
-		// } else {
-		// $ht_ctc_defaults = false; // Prevent repeated loading attempts
-		// }
-		// }
-
-		// $default_values = $if_not_exist_in_db;
-
-		// if ($ht_ctc_defaults) {
-		// if (is_callable(array($ht_ctc_defaults, $option_name))) {
-		// $default_values = $ht_ctc_defaults->$option_name();
-		// } else {
-		// $default_values = apply_filters('ht_ctc_fh_default_values', $default_values, $option_name);
-		// }
-		// }
-
-		// $result = $value;
-
-		// if (false === $value) {
-		// $result = $default_values;
-		// } elseif (is_array($value) && is_array($default_values)) {
-		// $result = array_merge($default_values, $value);
-		// }
-
-		// $merged_cache[$option_name] = $result;
-
-		// return $result;
-		// }
 
 		/**
 		 * Safely retrieve and sanitize a request variable (GET/POST).
@@ -278,6 +222,116 @@ if ( ! class_exists( 'HT_CTC_Utils' ) ) {
 
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug-gated helper.
 			error_log( $line );
+		}
+
+		/**
+		 * Attach query tags to an outbound URL.
+		 *
+		 * One line of real work, kept in one place: build_query() (inside add_query_arg)
+		 * passes $urlencode = false and does not encode, so the tags are encoded first.
+		 * Callers assemble their own tags and sanitize them; nothing is added here.
+		 *
+		 * @param string $url  Destination page.
+		 * @param array  $args Query tags, already sanitized.
+		 * @return string Clean URL via esc_url_raw() - escape with esc_url() at point of HTML output.
+		 */
+		private static function campaign_url( $url, $args ) {
+
+			return esc_url_raw( add_query_arg( rawurlencode_deep( $args ), $url ) );
+		}
+
+		/**
+		 * Build a URL with UTM campaign parameters for PRO upgrade links.
+		 *
+		 * For links whose job is to sell PRO. Anything that merely informs -- docs,
+		 * FAQ, troubleshooting, support -- belongs in doc_url() instead; routing it
+		 * here would count a help click as upgrade traffic and make the funnel
+		 * unreadable.
+		 *
+		 * @param string $medium  Surface rendering the link: banner, sidebar, teaser,
+		 *                        pro_tab, plugins_page, menu, inline, toast.
+		 * @param string $content Optional. Feature or placement within that surface.
+		 * @param string $url     Optional. Destination page. Defaults to pricing.
+		 * @return string Clean URL via esc_url_raw() - escape with esc_url() at point of HTML output.
+		 */
+		public static function pro_url( $medium, $content = '', $url = '' ) {
+
+			if ( empty( $url ) ) {
+				$url = 'https://holithemes.com/plugins/click-to-chat/pricing/';
+			}
+
+			$args = array(
+				'utm_source'   => 'ctc_main',
+				'utm_medium'   => sanitize_key( $medium ),
+				'utm_campaign' => 'pro_upgrade',
+			);
+
+			if ( '' !== $content ) {
+				$args['utm_content'] = sanitize_key( $content );
+			}
+
+			// // Which build produced the click. not using to avoid cache issue.
+			// if ( defined( 'HT_CTC_VERSION' ) ) {
+			// $args['ctc_v'] = HT_CTC_VERSION;
+			// }
+
+			return self::campaign_url( $url, $args );
+		}
+
+		/**
+		 * Build a URL with UTM campaign parameters for documentation and help links.
+		 *
+		 * The counterpart to pro_url(), and deliberately the smaller of the two: a
+		 * destination and nothing else. What decides the wrapper is the link's job on
+		 * the page, not the page it points at -- a teaser selling Business Hours is a
+		 * pro_url() even though it lands on a docs page.
+		 *
+		 * Only which page was asked for is worth knowing here, and the destination
+		 * already says that, so there is no medium to pass: a help link carries three
+		 * tags where a sale link carries four.
+		 *
+		 * @param string $url Destination page.
+		 * @return string Clean URL via esc_url_raw() - escape with esc_url() at point of HTML output.
+		 */
+		public static function doc_url( $url ) {
+
+			$args = array(
+				'utm_source'   => 'ctc_main',
+				'utm_campaign' => 'docs',
+			);
+
+			$content = self::url_slug( $url );
+
+			if ( '' !== $content ) {
+				$args['utm_content'] = $content;
+			}
+
+			return self::campaign_url( $url, $args );
+		}
+
+		/**
+		 * Derive a utm_content value from the destination itself.
+		 *
+		 * Saves every doc link from hand-naming its own tag. The path is the identifier:
+		 * the plugin prefix is dropped and what remains is joined, so /docs/greetings-form/
+		 * and /greetings-form/ stay distinct in reports.
+		 *
+		 * @param string $url Destination page.
+		 * @return string Sanitized key, empty when the URL carries no usable path.
+		 */
+		private static function url_slug( $url ) {
+
+			$parts = wp_parse_url( $url );
+			$path  = isset( $parts['path'] ) ? trim( $parts['path'], '/' ) : '';
+
+			$path = preg_replace( '#^plugins/click-to-chat/?#', '', $path );
+			$slug = str_replace( array( '/', '-' ), '_', $path );
+
+			if ( ! empty( $parts['fragment'] ) ) {
+				$slug .= '_' . str_replace( '-', '_', $parts['fragment'] );
+			}
+
+			return sanitize_key( $slug );
 		}
 	}
 
